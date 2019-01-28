@@ -3,16 +3,16 @@
 ## Table of Contents
 
 1. [Basics](../base/)
-    * [Operators](../base/operators.md)
-    * [Data Types](../base/types.md)
-    * [Utilities](../base/utils.md)
-    * [Conditionals](../base/cond.md)
-    * [Loops](../base/loops.md)
-    * [Functions](../base/fun.md)
-    * [`apply`](../base/apply.md)
+    * [Operators](../master/base/operators.md)
+    * [Data Types](../master/base/types.md)
+    * [Utilities](../master/base/utils.md)
+    * [Conditionals](../master/base/cond.md)
+    * [Loops](../master/base/loops.md)
+    * [Functions](../master/base/fun.md)
+    * [`apply`](../master/base/apply.md)
 2. [Playground](../master/playground/)
-    * [Toy Data Set](../playground/toy_data/)
-    * [Titanic](../playground/titanic/)
+    * [Toy Data Set](../master/playground/toy_data/)
+    * [Titanic](../master/playground/titanic/)
 
 __TODO:__
 
