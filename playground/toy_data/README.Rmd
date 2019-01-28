@@ -1,0 +1,394 @@
+---
+title: "R Tutorial"
+author: Rodrigo Vallejos
+output: 
+  github_document:
+    html_preview: false
+---
+
+# Table of Contents
+
+1. [Setting up](#setting-up)
+2. [Importing our data](#importing-our-data)
+3. [First glance](#first-glance)
+4. [Subset](#subsetting)
+    * [Position](#subset-by-position)
+    * [Row and column](#subset-by-row-and-column)
+    * [Arrays](#subset-with-arrays)
+    * [Column name (1)](#subset-by-column-name-(1))
+    * [Column name (2)](#subset-by-column-name-(2))
+    * [Column name (3)](#subset-by-column-name-(3))
+5. [`dplyr`](#dplyr)
+    * [Piping](#piping)
+    * [`select`](#select)
+    * [`filter`](#filter)
+    * [`mutate`](#mutate)
+    * [`group_by` & `summarize`](#group_by-&-summarize)
+6. [Visualization](#visualization)
+    * [`ggplot2`](#ggplot2)
+7. [`factor`](#factor)
+
+# Setting up
+
+```{r}
+is_valid <- require(tidyverse)
+if (!is_valid) {
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+```
+
+The `tidyverse` is a collection of packages, such as `ggplot2` and `dplyr`, that have multiple tools not offered in base R. The tools offered by the `tidyverse` will make your projects more streamline. You can find more information about the `tidyerse` in this [link](https://www.tidyverse.org/).
+
+When we import the `tidyverse`, you will see a __Conflicts__. This is of no concern. It is just informing us that certain functions that are defined in `dplyr` have the same name as functions in base R. The imported functions will be used.
+
+__SIDE NOTE__: We can import packages through the `library` or the `require` functions. If a package does not exist, `library` will raise an error and `require` will produce a `boolean`, or `logical`. This logical value represents if the import was successful, `TRUE`, or failed, `FALSE`.
+
+# Importing our data
+
+We are using a toy, fictional, dataset obtained from [Kaggle](https://www.kaggle.com/carlolepelaars/toy-dataset). Fortunately, this data is stored as a `.csv`, comma-separated values. This is a standard format that stores tabular data as text. Each cell, value, is separated by a comma. 
+
+__SIDE NOTE__: There are other ways to store data as text. The use of a comma could be substituted by `;`, for instance. I encourage you to find information of _flat files_.
+
+```{r}
+path <- file.path(".", "toy_dataset.csv")
+```
+
+Above is the _path_ to our data. Be sure to have downloaded and unzipped the data from Kaggle in the same directory, folder, as this notebook. We use the `file.path` function to design a _path_ that is independent of the operating system which we may be using. For example, using the format of a path from Windows in a Mac would not work. We assign this constructed path to the `path` variable.
+
+For this case, `file.path` is not that useful, given that the `.csv` file should be resting within the working directory of this R notebook.
+
+```{r}
+dat <- read_csv(path)
+
+# This would also work, if in the same directory as notebook
+dat <- read_csv("toy_dataset.csv")
+```
+
+After defining our path, we can call the `read_csv`, a function from the `readr` package, to parse through our file and store our data as a `tibble`. A `tibble` is a modern version of a dataframe. The main differences between a tibble and a dataframe are printing, subsetting, and recycling. You can find out more information about what that means by clicking on this [link](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html).
+
+It is important to note that base R also has a function to parse through `.csv` files...
+
+```{r}
+example1 <- read.csv(path, stringsAsFactors = FALSE)
+```
+
+The `read.csv` is a wrapper function around the `read.table` function. With `read.csv` we would have to specify that the `strings`, or `characters`, in our `.csv` file, are __not__ of `factor` type. We will explore what a `factor` is later on. There are other reasons to use `read_csv`, such as speed, but it does not matter for the pursposes of this introduction.
+
+__SIDE NOTE__: If you are curious to find more information about a function in R, you can use the `?` operator. In the R console, type `?read.csv`. You will be directed to the `read.csv` documentation within RStudio.
+
+```{r include=FALSE}
+colnames(dat)[3] <- "Sex"
+```
+
+# First glance
+
+The first thing you should do when getting a new data set is to start familiarizing yourself with its content. We can use the `head` or `tail` functions to look into the first or last few rows of our data.
+
+```{r}
+head(dat)
+```
+
+Looking at the first or last few rows is good and all, but its still not enough to get familiar with this data. Another nifty tool is `str`, which is give you the _structure_ of your data.
+
+* Class of the variable being passed: `tibble`
+* Number of observations: `150000 obs`
+* Number of variables: `6 variables`
+* Column names
+* Data type of each column
+* The first few values of that column
+
+`give.attr = FALSE` tells `str` not to print the attributes. You can remove that argument from the function call, and the output will include the attributes. Removing `give.attr = FALSE` displays the attributes since `give.attr` has a default value of `TRUE`.
+
+```{r}
+str(dat, give.attr = FALSE)
+```
+
+You could also just want the number of observations or variables. You can call the `dim` function that gives you the _dimensions_ of the inputted dataframe. The first element is the number of rows, observations, and then the number of columns, variables.
+
+```{r}
+dim(dat)
+```
+
+Finally, you can also look at the names of the columns with the `colnames` function.
+
+```{r}
+colnames(dat)
+```
+
+# Subsetting
+
+So far we have managed to import our packages, load our data, and see its structure. But how can we access the data? There are actually multiple ways to subset your data, we will go through a couple of examples.
+
+__DEFINITION__: Subsetting is the extraction of parts from a whole.
+
+You can extract information form your dataframes by specify a row and a column.
+
+Lets check out the `Age` column.
+
+## Subset by position:
+
+  * Every element in a structure has some position, that can be represented numerically.
+  * `Number` is the first column, and thus, it is of column position `1`. `Age` is the fourth column, and therefore, it is in column position `4`.
+  * You tell R what positions you want by using squarebrackets, `[]`, right after your dataframe.
+  * Example: `dataframe_name[<ROW_POSITION>, <COLUMN_POSITION>]`
+  
+  * You can get the entire column by not specifying the row position.
+
+```{r}
+head(dat[, 4])
+```
+
+  * If you do not specify any column position, you will simply get the entire row of the dataframe
+  
+```{r}
+dat[2, ]
+```
+
+## Subset by row and column:
+  * To get a specific value from a dataframe, pass in a row position and a column position or name.
+  * Column name must be in quotes.
+
+```{r}
+dat[2, 4]
+dat[2, "Age"]
+```
+
+
+## Subset with arrays:
+  * The `[]` operator can take a number, a name, and an _array_ of values.
+  * If you want to get `Age` and `Income`, you will have to pass an array of their positions or names.
+  * Column names must be in quotes
+  
+```{r}
+head(dat[, c("Age", "Income")])
+```
+
+```{r}
+head(dat[, c(4, 5)])
+```
+
+  * If you want rows 50 to 100, and you are too lazy to right an array containing all those number, you can use the `:` operator. `:` accepts a start and end value, and creates a sequence.
+
+```{r}
+1:3
+head(dat[50:100, ])
+```
+
+
+## Subset by column name (1):
+  * If you do not know the numerical position of your column, R can be coerced to give you the column by column name
+
+```{r}
+head(dat[, "Age"])
+```
+
+## Subset by column name (2):
+  * If you already know you want the entire column, you can just use the `[[]]` operator.
+  * Give `[[]]` the name of the column, in quotes.
+
+```{r}
+head(dat[["Age"]])
+```
+
+## Subset by column name (3):
+  * You can also use the `$` to get a column from your dataframe
+  * Write the column name after `$`, with __no__ quotes.
+
+```{r}
+head(dat$Age)
+```
+
+You now know seven different ways to get access to data in a dataframe! However, you may have noticed some differences in the output. The final two subsetting methods returns a vector of numbers, while all other methods have returned a dataframe. Always be aware of what kind of data type your functions or operations will return. For example, we can calculate the mean of a vector, but we cannot call the mean function on a dataframe.
+
+__SIDE NOTE__: A vector in R is an array of values of identical data type. There are also lists in R, which are array of values, however, the values can be of differing data types. 
+
+```{r}
+ages <- dat$Age
+```
+
+We can perform a logical operation on `ages` and then find the sum of hits divided by the length of the actual vector.
+
+```{r}
+sum(ages > 25) / length(ages)
+```
+
+Lets break this down further.
+
+1. `ages > 25`: This will go element wise through our vector. If an element is greater than `25`, it will be labelled as `TRUE`, otherwise `FALSE`. Essentially, you are creating a new vector of `logical` type.
+2. `sum`: This function is then adding the `logical` vector, where the sum is equal to the number of `TRUE`'s in the vector. Adding a list of `TRUE` and `FALSE` works because under the hood `TRUE` is just `1` and `FALSE` is just `0`.
+3. We then divide, `/`, the result sum by the `length` of cities. As the function name suggests, it returns the `length` of a given vector.
+
+A simpler way of finding out this proportion is by calling the `mean` function.
+
+```{r}
+mean(ages > 25)
+```
+
+__SUGGESTION__: Read through other operators that R has been built-in, these will be fundamental for any future projects.
+
+__IMPORTANT__: Many of the functions that you will encounter will often have a rather intuitive name. If you want to the median of your data, you call the `median` function. For the absolute value, you can call the `abs` function. The more you practice your R, or other languages, the better you will become a predicting what the names of these functions will be.
+
+Can we get the rows of individuals that live in `"Dallas"` and are older than `25`?
+
+1. Test _which_ elements in `dat$City` column are equal to `"Dallas"`.
+2. Test _which_ elements in `dat$Age` column are greater than `25`.
+3. In between those two test, add the `&`, AND, operator. This operator will only return `TRUE` if its _operands_ are `TRUE`.
+4. __OPTIONAL__: Store this new `logical` vector into a new variable.
+5. Pass the vector through the `<ROW_INDEX>` segment of `[]` on your dataframe.
+
+```{r}
+dallas_and_g25 <- dat$City == "Dallas" & dat$Age > 25
+dat[dallas_and_g25, ]
+```
+
+If you did not want the actual data, but just the indices where these value are stored, you can use the `which` function. This will take in a `logical` vector, and return a vector with the index value at any point where the original vector has a `TRUE`.
+
+```{r}
+tail(which(dallas_and_g25))
+```
+
+You can perform another test, were you are looking for people who live in `Dallas`, or are older than `25`. The same procedure as above applied. The different is the logical operator used. This time we want the `|`, OR, operator. It will only return `FALSE` if its operands are `FALSE`.
+
+```{r}
+head(dat$City == "Dallas" | dat$Age > 25)
+```
+
+# `dplyr`
+
+`dplyr` will be one of the most powerful packages in your toolbox. This package helps with _data wrangling_, or munging, which is the act of manipulating/transforming your data into a form that is more conducise for downstsream processing.
+
+## Piping
+
+Before we get into `dplyr` functions, we must first learn about __piping__. 
+
+Piping allows you to pass the output of one function as the input of another. The pipe operator in R is `%>%`, and it is found in the `magrittr` package of the `tidyverse`.
+
+Below we are getting the mena of individuals that live in Dallas and are older than 25. We then get the `Income` column, convert it to the thousands, and then calculate the mean income. We will cover all the functions we called to perform this operation ina second. What is important to take out of this example is how ugly this code is!
+
+```{r}
+summarize(mutate(select(filter(dat, City == "Dallas" & Age > 25), Income), Income = Income/1000), meanIncome = mean(Income))
+```
+
+Piping will allow you to prevent having this degree of function _nesting_. Let us find a more visually appealing form.
+
+```{r}
+dat %>%
+  filter(City == "Dallas" & Age > 25) %>%
+  select(Income) %>%
+  mutate(Income = Income / 1000) %>%
+  summarize(mean(Income))
+```
+
+This looks more understandable! We have our `dat` dataframe, and we slingshot that into the `filter` function. The filtered dataframe, then goes to `select`, `mutate`, and finally `summarize` lets us take the mean of the `Income`.
+
+Readability, while very important when writing any sort of code, is not the only reason to use pipes. I encourage you to look into why we use pipes, and what other pipe operators are available in R.
+
+The indentation are just to make the code neater. It is easier to read line by line, rather than having a long line of pipes.
+
+## `select`
+
+`select` is a function that lets us _select_ specific columns by name. This is much like what we have learned earlier with subsetting.
+
+```{r}
+ages <- select(dat, Age)
+```
+
+Lets use our new `%>%` operator.
+
+```{r}
+ages <- dat %>% select(Age)
+ages
+```
+
+The pipe operator took `dat` and slingshot it to the `select` function. Then, `select` extract the `Age` column from `dat`.
+
+## `filter`
+
+As the name implies, `filter` will _filter_ out the data you want from a given input. This is similar to what we did earlier with `"Dallas"` and `25` in the previous section.
+
+```{r}
+dallas_and_g25_income <- dat %>% 
+  filter(City == "Dallas" & Age > 25) %>%
+  select(Income)
+dallas_and_g25_income
+```
+
+Here we not only _filtered_ a rows with `"Dallas"` and greater than `25`, but we then piped that through to `select` and extracted a dataframe with the `Income` of those people.
+
+In other words, we managed to _filter_ rows from a dataframe based on some condition, and then _pipe_ that output into `select` and _select_ the `Income` column.
+
+## `mutate`
+
+Using `mutate` you can grab a pre-existing column and perform an operation over it, or create a new column. We will go through two examples.
+
+On our last example we got a dataframe of `Income`. However, these are some big numbers! Lets divide all of them by 1000.
+
+```{r}
+dallas_and_g25_income <- dat %>% 
+  filter(City == "Dallas" & Age > 25) %>%
+  select(Income) %>%
+  mutate(Income = Income / 1000)
+dallas_and_g25_income
+```
+
+Amazing! Every element in the column has changed to its quotient. However, we should be more explicit as to what we mean by `Income`. Lets create new column with these quotients, rather than replacing the originals.
+
+```{r}
+dallas_and_g25_income <- dat %>% 
+  filter(City == "Dallas" & Age > 25) %>%
+  select(Income) %>%
+  mutate(Income_thousands = Income/1000)
+dallas_and_g25_income
+```
+
+## `group_by` & `summarize`
+
+So far we have learned how to `select`, `filter`, and `mutate` our dataframes. That is already quite a lot to take in!
+
+There are two more powerful tools that you should know. Let us go through an example, and then explain what happened.
+
+```{r}
+mean_income_by_city <- dat %>% 
+  select(City, Income) %>%
+  mutate(Income_thousands = Income / 1000) %>%
+  group_by(City) %>%
+  summarize(mean_Income = mean(Income_thousands))
+mean_income_by_city 
+```
+
+The break down:
+
+1. Create and assign the final dataframe to variable `mean_income_by_city`
+2. _Select_ the `City` and `Income` columns
+3. Create new variable `Income_thousands`, and assign it the quotient of `Income / 1000`
+4. _Group_ the dataframe by their cities
+5. Calculate the mean income per city
+
+You can think of a `City` as a category, and there are people that fall under that category. We can group all the information about those people under that `City`. It is like creating a new dataframe for each `City`.
+
+After we group out cities, any operation we perform will be executed on a per group basis. For example `mutate` operates on a per element basis, dividing each `Income` value by `1000`. However, when we call the `mean` function on `Income_thousands`, the operation is performed group wise.
+
+# Visualization
+
+So far we have covered how to import your data, subset it, and transform it. However, an important part of exploring and communicating your data is through __visualizations__. A strong visualization can go a long way in communicating your results. 
+
+Hadley Wickham, the Chief Scientist of RStudio and author of the `tidyverse` packages, said: 
+  
+> "Data visualization is fundamentally a human process. You can see something in a visualization that you could not expect, and no computer program could have told you about. However, since data visualization is fundamentally a human process, it will not scale."
+
+## `ggplot2`
+```{r}
+dat %>%
+  select(City, Sex, Income, Illness) %>%
+  mutate(Income_thousands = Income / 1000) %>%
+  group_by(City, Sex, Illness) %>%
+  summarize(mean_Income = mean(Income_thousands)) %>%
+  ggplot(aes(x=City, 
+             y=mean_Income, 
+             fill=Sex)) +
+    geom_col(stat="identity", position = "dodge") + 
+    facet_wrap(~ Illness) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+# `factor`
