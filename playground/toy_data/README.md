@@ -11,9 +11,9 @@ Rodrigo Vallejos
       - [Position](#subset-by-position)
       - [Row and column](#subset-by-row-and-column)
       - [Arrays](#subset-with-arrays)
-      - [Column name (1)](#subset-by-column-name-\(1\))
-      - [Column name (2)](#subset-by-column-name-\(2\))
-      - [Column name (3)](#subset-by-column-name-\(3\))
+      - [Column name (1)](#subset-by-column-name-1)
+      - [Column name (2)](#subset-by-column-name-2)
+      - [Column name (3)](#subset-by-column-name-3)
 5.  [`dplyr`](#dplyr)
       - [Piping](#piping)
       - [`select`](#select)
@@ -369,7 +369,7 @@ head(dat[50:100, ])
     ## 5     54 Dallas Male      57  55133 No     
     ## 6     55 Dallas Male      32  39309 No
 
-## Subset by column name (1):
+## Subset by column name 1:
 
   - If you do not know the numerical position of your column, R can be
     coerced to give you the column by column name
@@ -390,7 +390,7 @@ head(dat[, "Age"])
     ## 5    46
     ## 6    36
 
-## Subset by column name (2):
+## Subset by column name 2:
 
   - If you already know you want the entire column, you can just use the
     `[[]]` operator.
@@ -404,7 +404,7 @@ head(dat[["Age"]])
 
     ## [1] 41 54 42 40 46 36
 
-## Subset by column name (3):
+## Subset by column name 3:
 
   - You can also use the `$` to get a column from your dataframe
   - Write the column name after `$`, with **no** quotes.
