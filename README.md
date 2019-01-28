@@ -10,7 +10,7 @@
     * [Loops](../base/loops.md)
     * [Functions](../base/fun.md)
     * [`apply`](../base/apply.md)
-2. [Playground](../playground/)
+2. [Playground](../blob/master/playground/)
     * [Toy Data Set](../playground/toy_data/)
     * [Titanic](../playground/titanic/)
 
