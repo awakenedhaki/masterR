@@ -777,7 +777,7 @@ is through **visualizations**. A strong visualization can go a long way
 in communicating your results.
 
 Hadley Wickham, the Chief Scientist of RStudio and author of the
-`tidyverse` packages, said:
+`tidyverse` packages, said in the OpenVis 2017 conference:
 
 > “Data visualization is fundamentally a human process. You can see
 > something in a visualization that you could not expect, and no
