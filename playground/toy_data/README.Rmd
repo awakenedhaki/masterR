@@ -706,14 +706,12 @@ get_class_incomes <- function(incomes) {
 }
 
 # Returns "upper", "middle", or "lower", depending on magnitude of income
-get_class_income <- function(income) {
-  UPPER = 120000
-  LOWER = 45000
-  if (income > UPPER) {
+get_class_income <- function(income, upper=120000, lower=45000) {
+  if (income > upper) {
     return("upper")
-  } else if (income >= LOWER & income <= UPPER) {
+  } else if (income >= lower & income <= upper) {
     return("middle")
-  } else if (income < LOWER) {
+  } else if (income < lower) {
     return("lower")
   }
 }
@@ -737,9 +735,9 @@ Oh gosh! That looks like a lot to take in! Lets break down:
 
 1. Define a function, `get_class_incomes`, that takes in a vector of incomes (integers), and applies a second function, `get_class_income`, to each element. The output of `get_class_incomes` will be a vector of characters.
 2. Define `get_class_income`, which is checking an individual income value. This function tests if an income is...
-  * Greater than a constant variable `UPPER`. If `TRUE`, return `"upper"`, else, go to next test
-  * Greater than or equal to `LOWER` `&` lower than or equal to `UPPER`. If `TRUE`, return `"middle"`, else, go to next test
-  * Lower than `LOWER`. If `TRUE`, return `"lower"`.
+  * Greater than variable `upper`. If `TRUE`, return `"upper"`, else, go to next test
+  * Greater than or equal to `lower` `&` lower than or equal to `upper`. If `TRUE`, return `"middle"`, else, go to next test
+  * Lower than `lower`. If `TRUE`, return `"lower"`.
 3. Declare new variable that will store a wrangled dataframe from `dat` using `dplyr` and `%>%`.
   * `select` the `City` and `Income` columns
   * `mutate` the `Income` columns using the defined `get_class_incomes`, and creating a new column called `income_class`
