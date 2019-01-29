@@ -15,20 +15,29 @@ output:
     * [Position](#subset-by-position)
     * [Row and column](#subset-by-row-and-column)
     * [Arrays](#subset-with-arrays)
-    * [Column name (1)](#subset-by-column-name-(1))
-    * [Column name (2)](#subset-by-column-name-(2))
-    * [Column name (3)](#subset-by-column-name-(3))
+    * [Column name 1](#subset-by-column-name-1)
+    * [Column name 2](#subset-by-column-name-2)
+    * [Subsetting with conditions](#subsetting-with-conditions)
 5. [`dplyr`](#dplyr)
     * [Piping](#piping)
     * [`select`](#select)
     * [`filter`](#filter)
     * [`mutate`](#mutate)
+    * [`arrange`](#arrange)
+    * [`rename`](#rename)
     * [`group_by` & `summarize`](#group_by-&-summarize)
 6. [Visualization](#visualization)
+    * [Types of plots](#types-of-plots)
+      * [Scatter plot](#scatter-plot)
+      * [Line plot](#line-plot)
+      * [Histogram](#histogram)
+      * [Bar chart](#bar-chart)
+      * [Box plot](#box-plot)
     * [`ggplot2`](#ggplot2)
-7. [`factor`](#factor)
+      * [Grammar](#grammar)
+      * [Visualizing our data](#visualizing-our-data)
 
-# Setting up
+# Setting up 
 
 ```{r}
 is_valid <- require(tidyverse)
@@ -38,9 +47,9 @@ if (!is_valid) {
 }
 ```
 
-The `tidyverse` is a collection of packages, such as `ggplot2` and `dplyr`, that have multiple tools not offered in base R. The tools offered by the `tidyverse` will make your projects more streamline. You can find more information about the `tidyerse` in this [link](https://www.tidyverse.org/).
+The `tidyverse` is a collection of packages, such as `ggplot2` and `dplyr`, that have multiple tools not offered in base R. You can find more information about the `tidyerse` by clicking on this [link](https://www.tidyverse.org/).
 
-When we import the `tidyverse`, you will see a __Conflicts__. This is of no concern. It is just informing us that certain functions that are defined in `dplyr` have the same name as functions in base R. The imported functions will be used.
+When we import the `tidyverse`, you will see a __Conflicts__ warning. This is of no concern. It is just informing us that certain functions that are defined in `dplyr` have the same name as functions in base R. The imported functions will be used.
 
 __SIDE NOTE__: We can import packages through the `library` or the `require` functions. If a package does not exist, `library` will raise an error and `require` will produce a `boolean`, or `logical`. This logical value represents if the import was successful, `TRUE`, or failed, `FALSE`.
 
@@ -79,6 +88,7 @@ __SIDE NOTE__: If you are curious to find more information about a function in R
 
 ```{r include=FALSE}
 colnames(dat)[3] <- "Sex"
+
 ```
 
 # First glance
@@ -110,10 +120,23 @@ You could also just want the number of observations or variables. You can call t
 dim(dat)
 ```
 
-Finally, you can also look at the names of the columns with the `colnames` function.
+You can also look at the names of the columns with the `colnames` function.
 
 ```{r}
 colnames(dat)
+```
+
+Finally, there is also the `summary` function. This allows you to have a small report of basic descriptive statistics of dataframe's variables.
+
+```{r}
+summary(dat)
+```
+
+We found our first oddity! If we gear our attention to the minimum value of `Income`, we notice that it is a negative number. We will remove negative values from our data.
+
+```{r}
+dat <- dat[dat$Income > 0, ]
+summary(dat)
 ```
 
 # Subsetting
@@ -122,21 +145,22 @@ So far we have managed to import our packages, load our data, and see its struct
 
 __DEFINITION__: Subsetting is the extraction of parts from a whole.
 
-You can extract information form your dataframes by specify a row and a column.
+__KEY POINTS__:
 
-Lets check out the `Age` column.
+* Every element is _indexed_. Their index can be either numerical or by name.
+* `Number` is the first column, and thus, it is of column position `1`. `Age` is the fourth column, and therefore, it is in column position `4`.
+* You can get a specific row nad column by using squarebrackets, `[ , ]`.
+  * Example: `dataframe_name[<ROW_POSITION>, <COLUMN_POSITION>]`
+* You can get a specific column using `[[` or `$` operators.
+* `[[` and `$` will return the column as a vector, not a dataframe
 
 ## Subset by position:
-
-  * Every element in a structure has some position, that can be represented numerically.
-  * `Number` is the first column, and thus, it is of column position `1`. `Age` is the fourth column, and therefore, it is in column position `4`.
-  * You tell R what positions you want by using squarebrackets, `[]`, right after your dataframe.
-  * Example: `dataframe_name[<ROW_POSITION>, <COLUMN_POSITION>]`
-  
-  * You can get the entire column by not specifying the row position.
+  * Leaving either the row or column segment empty means that you are requesting all elements.
+  * Column name must be in quotes.
 
 ```{r}
-head(dat[, 4])
+# Subsetting by column position and name
+head(dat[, 4] == dat[, "Age"])
 ```
 
   * If you do not specify any column position, you will simply get the entire row of the dataframe
@@ -145,15 +169,13 @@ head(dat[, 4])
 dat[2, ]
 ```
 
-## Subset by row and column:
-  * To get a specific value from a dataframe, pass in a row position and a column position or name.
-  * Column name must be in quotes.
+## Subset using row and column:
+  * To get a specific value from a dataframe, pass in a row position and a column position
+  * Column name must be in quotes
 
 ```{r}
-dat[2, 4]
-dat[2, "Age"]
+dat[2, 4] == dat[2, "Age"]
 ```
-
 
 ## Subset with arrays:
   * The `[]` operator can take a number, a name, and an _array_ of values.
@@ -161,97 +183,57 @@ dat[2, "Age"]
   * Column names must be in quotes
   
 ```{r}
-head(dat[, c("Age", "Income")])
-```
-
-```{r}
-head(dat[, c(4, 5)])
+head(dat[, c("Age", "Income")]) == head(dat[, c(4, 5)])
 ```
 
   * If you want rows 50 to 100, and you are too lazy to right an array containing all those number, you can use the `:` operator. `:` accepts a start and end value, and creates a sequence.
 
 ```{r}
 1:3
-head(dat[50:100, ])
+dat[50:100, ]
 ```
-
 
 ## Subset by column name (1):
-  * If you do not know the numerical position of your column, R can be coerced to give you the column by column name
-
-```{r}
-head(dat[, "Age"])
-```
-
-## Subset by column name (2):
-  * If you already know you want the entire column, you can just use the `[[]]` operator.
-  * Give `[[]]` the name of the column, in quotes.
+  * If you already know you want the entire column, you can just use the `[[` operator.
+  * The column name must be in quotes.
 
 ```{r}
 head(dat[["Age"]])
 ```
 
-## Subset by column name (3):
-  * You can also use the `$` to get a column from your dataframe
+## Subset by column name (2):
+  * You can also use the `$` subset operator to get a column from your dataframe
   * Write the column name after `$`, with __no__ quotes.
 
 ```{r}
 head(dat$Age)
 ```
 
-You now know seven different ways to get access to data in a dataframe! However, you may have noticed some differences in the output. The final two subsetting methods returns a vector of numbers, while all other methods have returned a dataframe. Always be aware of what kind of data type your functions or operations will return. For example, we can calculate the mean of a vector, but we cannot call the mean function on a dataframe.
+## Subsetting with conditions:
 
-__SIDE NOTE__: A vector in R is an array of values of identical data type. There are also lists in R, which are array of values, however, the values can be of differing data types. 
-
-```{r}
-ages <- dat$Age
-```
-
-We can perform a logical operation on `ages` and then find the sum of hits divided by the length of the actual vector.
-
-```{r}
-sum(ages > 25) / length(ages)
-```
-
-Lets break this down further.
-
-1. `ages > 25`: This will go element wise through our vector. If an element is greater than `25`, it will be labelled as `TRUE`, otherwise `FALSE`. Essentially, you are creating a new vector of `logical` type.
-2. `sum`: This function is then adding the `logical` vector, where the sum is equal to the number of `TRUE`'s in the vector. Adding a list of `TRUE` and `FALSE` works because under the hood `TRUE` is just `1` and `FALSE` is just `0`.
-3. We then divide, `/`, the result sum by the `length` of cities. As the function name suggests, it returns the `length` of a given vector.
-
-A simpler way of finding out this proportion is by calling the `mean` function.
-
-```{r}
-mean(ages > 25)
-```
-
-__SUGGESTION__: Read through other operators that R has been built-in, these will be fundamental for any future projects.
-
-__IMPORTANT__: Many of the functions that you will encounter will often have a rather intuitive name. If you want to the median of your data, you call the `median` function. For the absolute value, you can call the `abs` function. The more you practice your R, or other languages, the better you will become a predicting what the names of these functions will be.
-
-Can we get the rows of individuals that live in `"Dallas"` and are older than `25`?
+Can we get the rows of individuals that live in `"Dallas"` and are older than `50`?
 
 1. Test _which_ elements in `dat$City` column are equal to `"Dallas"`.
-2. Test _which_ elements in `dat$Age` column are greater than `25`.
+2. Test _which_ elements in `dat$Age` column are greater than `50`.
 3. In between those two test, add the `&`, AND, operator. This operator will only return `TRUE` if its _operands_ are `TRUE`.
 4. __OPTIONAL__: Store this new `logical` vector into a new variable.
 5. Pass the vector through the `<ROW_INDEX>` segment of `[]` on your dataframe.
 
 ```{r}
-dallas_and_g25 <- dat$City == "Dallas" & dat$Age > 25
-dat[dallas_and_g25, ]
+dallas_and_g50 <- dat$City == "Dallas" & dat$Age > 50
+dat[dallas_and_g50, ]
 ```
 
 If you did not want the actual data, but just the indices where these value are stored, you can use the `which` function. This will take in a `logical` vector, and return a vector with the index value at any point where the original vector has a `TRUE`.
 
 ```{r}
-tail(which(dallas_and_g25))
+tail(which(dallas_and_g50))
 ```
 
-You can perform another test, were you are looking for people who live in `Dallas`, or are older than `25`. The same procedure as above applied. The different is the logical operator used. This time we want the `|`, OR, operator. It will only return `FALSE` if its operands are `FALSE`.
+You can perform another test, were you are looking for people who live in `Dallas`, or are older than `50`. The same procedure as above applied. The different is the logical operator used. This time we want the `|`, OR, operator. It will only return `FALSE` if its operands are `FALSE`.
 
 ```{r}
-head(dat$City == "Dallas" | dat$Age > 25)
+head(dat$City == "Dallas" | dat$Age > 50)
 ```
 
 # `dplyr`
@@ -264,23 +246,23 @@ Before we get into `dplyr` functions, we must first learn about __piping__.
 
 Piping allows you to pass the output of one function as the input of another. The pipe operator in R is `%>%`, and it is found in the `magrittr` package of the `tidyverse`.
 
-Below we are getting the mena of individuals that live in Dallas and are older than 25. We then get the `Income` column, convert it to the thousands, and then calculate the mean income. We will cover all the functions we called to perform this operation ina second. What is important to take out of this example is how ugly this code is!
+Below we are getting the mean of individuals that live in Dallas and are older than 50. We then get the `Income` column, convert it to the thousands, and then calculate the overall mean income. We will cover these functions in a second. What is important to take out of this example is how ugly this code is!
 
 ```{r}
-summarize(mutate(select(filter(dat, City == "Dallas" & Age > 25), Income), Income = Income/1000), meanIncome = mean(Income))
+summarize(mutate(select(filter(dat, City == "Dallas" & Age > 50), Income), Income = Income / 1000), meanIncome = mean(Income))
 ```
 
 Piping will allow you to prevent having this degree of function _nesting_. Let us find a more visually appealing form.
 
 ```{r}
 dat %>%
-  filter(City == "Dallas" & Age > 25) %>%
+  filter(City == "Dallas" & Age > 50) %>%
   select(Income) %>%
   mutate(Income = Income / 1000) %>%
   summarize(mean(Income))
 ```
 
-This looks more understandable! We have our `dat` dataframe, and we slingshot that into the `filter` function. The filtered dataframe, then goes to `select`, `mutate`, and finally `summarize` lets us take the mean of the `Income`.
+This looks more understandable! We have our `dat` dataframe, and we slingshot that into the `filter` function. The dataframe is filtered and then goes to `select`, `mutate`, and finally `summarize`. `%>%` allows for the output of one function to be inputted into another without having function nested into each other.
 
 Readability, while very important when writing any sort of code, is not the only reason to use pipes. I encourage you to look into why we use pipes, and what other pipe operators are available in R.
 
@@ -288,7 +270,7 @@ The indentation are just to make the code neater. It is easier to read line by l
 
 ## `select`
 
-`select` is a function that lets us _select_ specific columns by name. This is much like what we have learned earlier with subsetting.
+`select` is a function that lets us _select_ specific columns by name, without using quotations. This is much like what we have learned earlier with subsetting. The output for this function will be a dataframe.
 
 ```{r}
 ages <- select(dat, Age)
@@ -297,56 +279,93 @@ ages <- select(dat, Age)
 Lets use our new `%>%` operator.
 
 ```{r}
-ages <- dat %>% select(Age)
+ages <- dat %>% 
+  select(Age)
+
 ages
 ```
 
-The pipe operator took `dat` and slingshot it to the `select` function. Then, `select` extract the `Age` column from `dat`.
-
 ## `filter`
 
-As the name implies, `filter` will _filter_ out the data you want from a given input. This is similar to what we did earlier with `"Dallas"` and `25` in the previous section.
+As the name implies, `filter` will _filter_ out the data you want from a given input. This is similar to what we did earlier with `"Dallas"` and `50` in the previous section.
 
 ```{r}
-dallas_and_g25_income <- dat %>% 
-  filter(City == "Dallas" & Age > 25) %>%
+dallas_and_g50_income <- dat %>% 
+  filter(City == "Dallas" & Age > 50) %>%
   select(Income)
-dallas_and_g25_income
+
+dallas_and_g50_income
 ```
 
-Here we not only _filtered_ a rows with `"Dallas"` and greater than `25`, but we then piped that through to `select` and extracted a dataframe with the `Income` of those people.
+Here we not only _filtered_ a rows with `"Dallas"` and greater than `50`, but we then piped that through to `select` and extracted the `Income` column.
 
 In other words, we managed to _filter_ rows from a dataframe based on some condition, and then _pipe_ that output into `select` and _select_ the `Income` column.
 
 ## `mutate`
 
-Using `mutate` you can grab a pre-existing column and perform an operation over it, or create a new column. We will go through two examples.
+Using `mutate`, you can grab a pre-existing column and perform an operation over it, or create a new column. We will go through two examples.
 
-On our last example we got a dataframe of `Income`. However, these are some big numbers! Lets divide all of them by 1000.
+On our last example we extracted the `Income` column. However, these are some big numbers! Lets divide all of them by 1000.
 
 ```{r}
-dallas_and_g25_income <- dat %>% 
-  filter(City == "Dallas" & Age > 25) %>%
+dallas_and_g50_income <- dat %>% 
+  filter(City == "Dallas" & Age > 50) %>%
   select(Income) %>%
   mutate(Income = Income / 1000)
-dallas_and_g25_income
+
+dallas_and_g50_income
 ```
 
-Amazing! Every element in the column has changed to its quotient. However, we should be more explicit as to what we mean by `Income`. Lets create new column with these quotients, rather than replacing the originals.
+Amazing! Every element in the column has changed to its quotient. However, we should be more explicit as to what we mean by `Income`. Lets repeat this operation, but this time create new column with these quotients, rather than replacing the originals.
 
 ```{r}
-dallas_and_g25_income <- dat %>% 
-  filter(City == "Dallas" & Age > 25) %>%
+dallas_and_g50_income <- dat %>% 
+  filter(City == "Dallas" & Age > 50) %>%
   select(Income) %>%
-  mutate(Income_thousands = Income/1000)
-dallas_and_g25_income
+  mutate(Income_thousands = Income / 1000)
+
+dallas_and_g50_income
 ```
 
-## `group_by` & `summarize`
+## `arrange`
 
-So far we have learned how to `select`, `filter`, and `mutate` our dataframes. That is already quite a lot to take in!
+The `arrange` function sorts, or _arranges_, a specify column in __ascending order__.
 
-There are two more powerful tools that you should know. Let us go through an example, and then explain what happened.
+Here we are ordering our `dat` in ascending order of Income.
+
+```{r}
+dat %>%
+  arrange(Income)
+```
+
+If you want to sort your dataframe in __descending order__, call `desc` on the column. Here is an example.
+
+```{r}
+dat %>%
+  arrange(desc(Income))
+```  
+
+R can also sorting words into alphatical order. It is the same process and a normal `arrange`.
+
+```{r}
+dat %>%
+  arrange(City)
+```
+
+## `rename`
+
+We can rename a column using the `rename` function. It is as simply as all other `dplyr` functions we have seen so far.
+
+```{r}
+dat %>%
+  rename(Sick=Illness)
+```
+
+Note that the new name for the column is on the left side, and the old name is on the right.
+
+## `group_by` & `summarize`  
+
+So far we have learned how to `select`, `filter`, and `mutate` our dataframes. That is already quite a lot to take in!  There are two more powerful tools that you should know. Let us go through an example, and then explain what happened. 
 
 ```{r}
 mean_income_by_city <- dat %>% 
@@ -354,12 +373,12 @@ mean_income_by_city <- dat %>%
   mutate(Income_thousands = Income / 1000) %>%
   group_by(City) %>%
   summarize(mean_Income = mean(Income_thousands))
+
 mean_income_by_city 
 ```
 
-The break down:
-
-1. Create and assign the final dataframe to variable `mean_income_by_city`
+The break down:  
+1. Create and assign the final dataframe to variable `mean_income_by_city`  
 2. _Select_ the `City` and `Income` columns
 3. Create new variable `Income_thousands`, and assign it the quotient of `Income / 1000`
 4. _Group_ the dataframe by their cities
@@ -367,28 +386,423 @@ The break down:
 
 You can think of a `City` as a category, and there are people that fall under that category. We can group all the information about those people under that `City`. It is like creating a new dataframe for each `City`.
 
-After we group out cities, any operation we perform will be executed on a per group basis. For example `mutate` operates on a per element basis, dividing each `Income` value by `1000`. However, when we call the `mean` function on `Income_thousands`, the operation is performed group wise.
+After we group out cities, any operation we perform will be executed on a per group basis. For example `mutate` operates on a per element basis, dividing each `Income` value by `1000`. However, when we call the `mean` function on `Income_thousands`, the operation is performed group wise. 
 
 # Visualization
 
 So far we have covered how to import your data, subset it, and transform it. However, an important part of exploring and communicating your data is through __visualizations__. A strong visualization can go a long way in communicating your results. 
 
-Hadley Wickham, the Chief Scientist of RStudio and author of the `tidyverse` packages, said: 
+Hadley Wickham, the Chief Scientist of RStudio and author of the `tidyverse` packages, said in OpenVis 2017 conference: 
   
 > "Data visualization is fundamentally a human process. You can see something in a visualization that you could not expect, and no computer program could have told you about. However, since data visualization is fundamentally a human process, it will not scale."
 
+Visualization will help you understand you aspects of your data that would simply not be apparent if you kept it in a dataframe. For example, our toy dataset has 150000 entries! It would be quite challenging to see what the distribution of `Income` looks like by just staring at the column!
+
+Moreover, since it is important that we make an effort to make data visualizations that accurately represent the results. There are multiple ways to mislead people with data, I encourage you to look for examples of misleading visualizations. 
+
+## Types of plots
+
+There are multiple types of plots, and they are all best suited for particular types of data. I am going to cover some basic types of plots, the ones that you are likely to use the most. You should explore other ways of visualizing your data. Other plots that may be of interest are, heat maps, scatterplot matrices, overlaying distributions, and violin plots.
+
+### Scatter plot
+
+You have likely encountered many scatter plots in your life time. This type of plot is best suited to identify any relationships, correlations, between two variables, columns. One variable is placed at the `x-axis` and the second variable is placed at the `y-axis`.
+
+The scatter plot below is representing two variables that are normally distributed. The edges of the graph represent the tails of the normal distributions. The darker, more concentrated, center represents the normal distribution peaks.
+
+```{r echo=FALSE}
+ggplot() + 
+  geom_point(aes(x=rnorm(2500, mean=70, sd=35),
+                 y=rnorm(2500, mean=70, sd=35))) +
+  xlab("X") + 
+  ylab("Y")
+```
+
+### Line plot
+
+Line plots well suited for representing a change of a variable over time. A classic example would be population growth.
+
+Below is a line graph show an exponential increase over some unit time.
+
+```{r echo=FALSE}
+ggplot() +
+  geom_line(aes(x=1:20, y=exp(1:20))) +
+  xlab("Unit time") + 
+  ylab("Y")
+```
+
+### Histograms
+
+Histograms are a great way to understand how a single variable is distributed. 
+
+The `y-axis` represents the number of events at that `x-value`. It is important to be cautious when intepretting and creating histograms. The distribution you obser may depend on the number of _bins_ that are used. You can think of the number of bins as the number of columns in th histogram.
+
+The histogram below has 30 bins, as stated by the warning.
+
+```{r include=FALSE}
+histogram_example <- rgamma(1000,4,4)
+```
+
+```{r echo=FALSE}
+ggplot() +
+  geom_histogram(aes(x=histogram_example)) +
+  xlab("X")
+```
+
+Here is the same hisogram with 60 bins...
+
+```{r echo=FALSE}
+ggplot() +
+  geom_histogram(aes(x=histogram_example), bins=60) +
+  xlab("X")
+```
+
+And, with 10 bins...
+
+```{r echo=FALSE}
+ggplot() +
+  geom_histogram(aes(x=histogram_example), bins=10) +
+  xlab("X")
+```
+
+### Bar chart
+
+A bar chart, or bar graph, is best suited for comparing a single statistic between categories. 
+
+Below there is a bar chart with some value on the `y-axis` being compared between category `P1` and `P2`. We can quickly see that `P2` is greater in value than `P1`.
+
+```{r echo=FALSE}
+barchart_example <- tibble(c(1000, 1500), c("P1", "P2"))
+
+colnames(barchart_example) <- c("Value", "Cat")
+
+ggplot(barchart_example, aes(x=Cat, y=Value)) + 
+  geom_col()
+```
+
+### Box plot
+
+Box plots are a way of comparing the distribution of multiple variables. 
+
+```{r echo=FALSE}
+boxplot_example <- tibble(
+  c(rnorm(100, 50, 40),
+    rnorm(100, 20, 30),
+    rnorm(100, 70, 15)),
+  c(rep("P1", 100), rep("P2", 100), rep("P3", 100))
+)
+colnames(boxplot_example) <- c("Value", "Category")
+
+ggplot(boxplot_example, aes(x=Category, y=Value))+
+  geom_boxplot()
+```
+
 ## `ggplot2`
+
+Another great tool that lives within the `tidyverse` is `ggplot2`. This package will help you with exploring your data and making amazing visualizations as well. It is a package that you should use from beginning of your project, to the end.
+
+### Grammar
+
+```{r include=FALSE}
+betaX <- rbeta(5000,2,5)
+betaY <- rbeta(5000,2,5)
+df <- tibble(betaX, betaY)
+```
+
+For this segment of `ggplot2`, I will be using values generated using the `rbeta` function. This data is stored in a dataframe called `df`, with columns `betaX` and `betaY`.
+
+Making in a plot with `ggplot2` is like painting on a canvas. Therefore, the first thing you have to do is get your canvas! 
+
+```{r}
+# Creating your canvas
+ggplot()
+```
+
+The `ggplot` function will initiate the canvas, also called _frame_, that will hold your plot. You will typically pass two arguments onto `ggplot`, your dataframe, and _aesthetics_.
+
+The aesthetics, `aes`, of our canvas are the x- and y-axis, which are assigned data by column name. Other aesthetic aspects are size, color, hue, etc. You can find out more about aesthetic aspects of your plots by clicking on this [link](https://ggplot2.tidyverse.org/articles/ggplot2-specs.html).
+
+Once you have created your canvas and given it your data and aesthetics, we must then tell `ggplot` what type of plot we want. Lets go for a scatter plot.
+
+```{r}
+ggplot(df, aes(x=betaX, y=betaY)) + 
+  geom_point(alpha=0.2)
+```
+
+You perform brush stroked on your canvas by using the `+` operator, followed by some function. In this case, we used `geom_point`. This has two parts to it: 
+
+* `geom` tells R that we are adding a geometric feature to our canvas
+* `point` tells R what geometric feature we are adding
+
+Within `geom_point`, I chose to added `alpha=0.2`. Why was that? There are a lot of data point! 5000 to be exact, so it was easier to see the entire plot if we made each point a bit transparent. The lower alpha, the more transparent your point will be.
+
+We could have made the same graph by specifying the aesthetics within `geom_point`...
+
+```{r}
+ggplot() + 
+  geom_point(aes(x=df$betaX, y=df$betaY), alpha=0.2)
+```
+
+If you want to change the name of your axis, and give your plot a title, use the `xlab`, `ylab`, and `ggtitle` functions.
+
+```{r}
+ggplot(df, aes(x=betaX, y=betaY)) + 
+  geom_point(alpha=0.2) + 
+  xlab("This is the x-axis") + 
+  ylab("This is the y-axis") + 
+  ggtitle("This is a title")
+```
+
+Hmmmm, the title is not centered... That's a bummer. Well we can add a `theme` to fix that!
+
+```{r}
+ggplot(df, aes(x=betaX, y=betaY)) + 
+  geom_point(alpha=0.2) + 
+  xlab("This is the x-axis") + 
+  ylab("This is the y-axis") + 
+  ggtitle("This is a title") +
+  theme(plot.title=element_text(hjust=0.5))
+```
+
+Within our `theme`, we assign `element_text(hjust=0.5)` to `plot.title`...
+
+* `plot.title` is the title of our plot
+* `element_text` helps specify what we want to happen to `plot.title`
+* `hjust` means horizontal adjustment to half of the plot (`0.5`)
+
+Every time you add a `+` you are adding another feature __on top__ of what you had before. You can even include a new plot...
+
+```{r}
+ggplot() + 
+  geom_point(aes(x=df$betaX, y=df$betaY), alpha=0.2) + 
+  xlab("This is the x-axis") + 
+  ylab("This is the y-axis") + 
+  ggtitle("This is a title") +
+  theme(plot.title=element_text(hjust=0.5)) + 
+  geom_histogram(aes(x=df$betaX), alpha=0.2)
+```
+
+Here we added a histogram of `betaX` ontop of our scatter plot. However, we had a huge oversight! The y-axis of the histogram is much greater than what we had originally. Our scatter plot was reduced to nothingness... Always be sure to consider the scale of what you are plotting. If you use transformations to make patterns more apparent... be certain that these are clear and not misleading to the viewers.
+
+### Visualizing our data
+
+Lets remind ourselves about what variables are present in our dataframe.
+
+```{r}
+colnames(dat)
+```
+
+`Income` sounds cool, don't you think? How should we plot this? Well, `Income` is a single variable, and it would be good to know how it is _distributed_. Therefore, we need to know the frequency that certain income ranges have. A histogram will do just the trick.
+
+```{r}
+ggplot(dat, aes(x=Income)) + 
+  geom_histogram(bins=60,
+                 aes(fill=..count..)) + 
+  labs(title="Income Distribution",
+       x = "Income (USD)",
+       y = "Counts") + 
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+I admit, I went a bit overboard with the shading! However, this is a perfect learning moment:
+
+> Do __not__ add unnecessary features to your visualization. Everything in your plot should help  make the interpretation of your data more __intuitive__, and __not__ cooler.
+
+In the above graph, I introduced four new aspects of `ggplot2`:
+
+* You can have `aes` in the call to `ggplot` and `geom_...`.
+* `fill=..count..` shades your plot according to _density_
+* `labs` is an all in one way of adding a title, x-label, and y-label
+* `bins` lets you specify how many _bins_ you want your histogram to have. You can be more specific and assigned a vector to `breaks`, giving you more control over how your histogram will look.
+
+This is cool and all, but wouldn't it be better if we could see the distribution of each `City`? Of course we can!
+
 ```{r}
 dat %>%
-  select(City, Sex, Income, Illness) %>%
-  mutate(Income_thousands = Income / 1000) %>%
-  group_by(City, Sex, Illness) %>%
-  summarize(mean_Income = mean(Income_thousands)) %>%
-  ggplot(aes(x=City, 
-             y=mean_Income, 
-             fill=Sex)) +
-    geom_col(stat="identity", position = "dodge") + 
-    facet_wrap(~ Illness) +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  select(City, Income) %>%
+  ggplot() +
+    geom_histogram(bins=60, aes(x=Income,
+                                fill=..count..)) +
+    facet_wrap(~ City) + 
+    labs(title="Income Distribution",
+         x = "Income (USD)",
+         y = "Counts") + 
+    theme(plot.title = element_text(hjust=0.5))
 ```
-# `factor`
+
+This time we included our trusty `dplyr` functions and `%>%`. The same concept as before applies in this case, since it is just feeding the munged dataframe into `ggplot`, and from `%>%` you begin using `+`.
+
+There are two things that I want you to get out of this. 
+
+1. I used `fill=..count..` again, but this time to prove a different point. This is showing us the density of of each __individual__ plot. Notice how `Boston` is dark while `New York City` is lighter. This is because of the fact that the color gradient is set to the __highest value__ overall. Each graph is _sharing_ a y-axis. Therefore you would not be able to observe the density of your counts using this method, since `New York City` is skewing the gradient.
+2. `facet_wrap(~ City)`, this is a new function! This works just like group_by, but rather than doing some computation, you are producing a plot! It is group the `Income` of each person by their respective `City` and the produce a histogram for each `City`. Take note of the tilde, `~` operator and that you do __not__ have to use quotation marks.
+
+You may find it better to store the wrangled dataframe into a new variable and plot that.
+
+I was googling a bit trying to find at what income range is considered middle class. They were all around \$45,000 to \$120,000, so lets go with that and plot the middle class's distribution. 
+
+The first method I show you is quick and dirty way of getting a graph colored by income class. I will show you a better method after this one.
+
+```{r}
+UPPER = 120000
+LOWER = 45000
+
+
+upper_class <- dat %>%
+  select(City, Income) %>%
+  filter(Income > UPPER)
+
+uc_hist <- geom_histogram(bins=60, aes(x=upper_class$Income),
+                          fill="green",
+                          alpha=0.7)
+
+middle_class <- dat %>%
+  select(City, Income) %>%
+  filter(Income >= LOWER & Income <= UPPER)
+
+mc_hist <- geom_histogram(bins=60, aes(x=middle_class$Income),
+                          fill="red",
+                          alpha=0.7)
+
+lower_class <- dat %>%
+  select(City, Income) %>%
+  filter(Income < LOWER)
+
+lc_hist <- geom_histogram(bins=60, aes(x=lower_class$Income),
+                          fill="blue",
+                          alpha=0.7)
+
+ggplot() +
+  uc_hist +
+  mc_hist +
+  lc_hist +
+  labs(title="Income Distribution",
+       x = "Income (USD)",
+       y = "Counts") + 
+  theme(plot.title = element_text(hjust=0.5))
+  
+```
+
+The above code is simply using `dplyr` functions to split our original dataframe into three parts, the upper, middle, and lower classes. We then make histogram, using `geom_histogram` for each class and store them in their individual variables. After this, we call `ggplot` and "add", use the `+` operator, to place all our histograms __on top__ of our `ggplot` canvas. 
+
+This is a good way of plotting this info down, but the cons are too great...
+
+1. We have to make three `geom_histogram` variables... I am too lazy for that! 
+2. A key feature is missing... The legend! How will our viewers know what the colors mean?!? 
+3. We also had to declare each color ourselves... Ugh! The humanity...
+4. There is also this weird overlap effect with the colors, its not very "professional" looking.
+5. If we want to change one aspect about each class, such as the wrangling of the data, we would have to do it in all three variables.
+
+We are in luck! There is a way of getting all this done with a single `geom_histogram`.
+
+__SIDE NOTE__: It may be weird thinking of a variable storing an image! So far it has only stored words, numbers, dataframes, you know, mathy stuff. What is important to realize is that objects, such as an image, are stored in memory. Our histogram variable simply store an where that image can be located in memory, like the address for your house.
+
+Lets get to the cool way of doing it!
+
+```{r}
+# Apply get_class_income on every element of income, return character vector
+get_class_incomes <- function(incomes) {
+  vapply(incomes, get_class_income, character(1))
+}
+
+# Returns "upper", "middle", or "lower", depending on magnitude of income
+get_class_income <- function(income) {
+  UPPER = 120000
+  LOWER = 45000
+  if (income > UPPER) {
+    return("upper")
+  } else if (income >= LOWER & income <= UPPER) {
+    return("middle")
+  } else if (income < LOWER) {
+    return("lower")
+  }
+}
+
+dat_income_class <- dat %>%
+  select(City, Income) %>%
+  mutate(income_class = get_class_incomes(Income))
+
+ggplot(dat_income_class) +
+  geom_histogram(bins=60, aes(x=Income, 
+                              fill=income_class),
+                 alpha=0.7) +
+  labs(title="Income Distribution",
+       x = "Income (USD)",
+       y = "Counts",
+       fill = "Income Class") + 
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+Oh gosh! That looks like a lot to take in! Lets break down:
+
+1. Define a function, `get_class_incomes`, that takes in a vector of incomes (integers), and applies a second function, `get_class_income`, to each element. The output of `get_class_incomes` will be a vector of characters.
+2. Define `get_class_income`, which is checking an individual income value. This function tests if an income is...
+  * Greater than a constant variable `UPPER`. If `TRUE`, return `"upper"`, else, go to next test
+  * Greater than or equal to `LOWER` `&` lower than or equal to `UPPER`. If `TRUE`, return `"middle"`, else, go to next test
+  * Lower than `LOWER`. If `TRUE`, return `"lower"`.
+3. Declare new variable that will store a wrangled dataframe from `dat` using `dplyr` and `%>%`.
+  * `select` the `City` and `Income` columns
+  * `mutate` the `Income` columns using the defined `get_class_incomes`, and creating a new column called `income_class`
+4. Plot our histogram. Pass our wrangled dataframe through `ggplot`, and assign `Income` column to our aesthetics `x` argument, within the `geom_histogram` function. We then also give our histogram some color but in a way we have not seen yet! We give `fill` the `income_class` column. `color` can tell this is some sort of categorical data, and thus assigns each category (upper, middle, and lower) its own color.
+
+__SIDE NOTE__: Do not worry if that was too much, such go over it a couple of times. I will be making other R guides talking about conditionals, writing functions, and built-ins such as `vapply`.
+
+__SIDE NOTE__: I wrote two functions, one for an income and another for a vector of incomes. It is important that when you write functions you consider what that function is going to operate on. This makes your code much clearer. If your code works, but people can't understand it, it is not as useful. For the functions I wrote down, they are simple and self-documenting. 
+
+Why go through all this trouble? 
+
+* Well for starters, this `colors` generously provided a legend for what each color means. No extra cost! Changing the legend name is as easy as adding a line in `labs`.
+* There is no longer this weird overlap of colors, so our figure looks much crisper and more professional
+* We can add another pipe, and have it affect the entire plot
+* There is only one `geom_histogram` call
+* We get to use `facet_wrap`!
+* And the main reason of course, the code looks awesome
+
+```{r}
+ggplot(dat_income_class) +
+  geom_histogram(bins=60, aes(x=Income, 
+                              fill=income_class),
+                 alpha=0.7) +
+  facet_wrap(~ City) +
+  labs(title="Income Distribution",
+       x = "Income (USD)",
+       y = "Counts",
+       fill = "Income Class") + 
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+Holy molly, we have used the `facet_wrap` function on `City` once more. This time it is much cooler. The colors we so previous retain their meaning in each subplot. So we can now visually infer that Dallas may have the greatest lower class proportions. Mountain View, on the other hand, seems to have a great amount of upper class individuals. And New York City has the largest amount of middle class.
+
+Lets double check this with a bar plot!
+
+```{r}
+total_per_class <- dat_income_class %>%
+  mutate(Ones = rep(1, nrow(dat_income_class))) %>%
+  group_by(City, income_class) %>%
+  summarize(total_per_class = sum(Ones))
+
+ggplot(total_per_class) +
+  geom_col(aes(x=City, 
+               y=total_per_class,
+               fill=income_class),
+           position="dodge",
+           alpha=0.9) +
+  labs(title="Number of People per Income Class",
+       x="City",
+       y="Number of People",
+       fill="Income Class") +
+  theme(plot.title=element_text(hjust=0.5),
+        axis.text.x=element_text(angle=45, hjust=1))
+```
+
+The bar plot introduced us to three new ideas:
+
+1. `geom_col` is the functionf or creating a bar plot.
+2. `position` is an argument of `geom_col`. This argument was set to `"dodge"`. This allows for grouped bar plots to not be stacked on top of each other. Do __not__ stack our bar plots, it can be difficult to interpret.
+3. `axis.text.x` is given `element_text` with arguments `angle = 45` and `hjust = 1`. What on earth? Since the `City` names were long, they began overlapping. We can set the angle of our x-axis lables, by giving the setting a new value to `angle` in degrees. We then adjust our labels so that they are as close to the actual plot as possible.
+
+The bar plot is good for a qualitative assessment, but we should really check the numbers. For things like Dallas' and Mountain View's count in lower and upper class, it is more than sufficient. However, for more subtle comparisons such as the number of upper class in Austin and Boston, a bar plot is simply ineffective.
+
+```{r}
+total_per_class
+```
