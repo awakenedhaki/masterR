@@ -17,5 +17,5 @@
 __TODO:__
 
 * Basics
-* Visualization in Toy Data Set
+* Typos in Toy Data Set
 * Typos in titanic
