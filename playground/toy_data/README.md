@@ -24,9 +24,9 @@ Rodrigo Vallejos
       - [`group_by` & `summarize`](#group_by-&-summarize)
 6.  [Visualization](#visualization)
       - [Types of plots](#types-of-plots)
+          - [Histogram](#histograms)
           - [Scatter plot](#scatter-plot)
           - [Line plot](#line-plot)
-          - [Histogram](#histogram)
           - [Bar chart](#bar-chart)
           - [Box plot](#box-plot)
       - [`ggplot2`](#ggplot2)
@@ -42,14 +42,14 @@ is_valid <- require(tidyverse)
 
     ## Loading required package: tidyverse
 
-    ## ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
     ## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
     ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
     ## ✔ readr   1.1.1     ✔ forcats 0.3.0
 
-    ## ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -369,7 +369,7 @@ head(dat[, c("Age", "Income")]) == head(dat[, c(4, 5)])
     ## [6,] TRUE   TRUE
 
   - If you want rows 50 to 100, and you are too lazy to right an array
-    containing all those number, you can use the `:` operator. `:`
+    containing all those numbers, you can use the `:` operator. `:`
     accepts a start and end value, and creates a sequence.
 
 <!-- end list -->
@@ -475,7 +475,7 @@ tail(which(dallas_and_g50))
 
 You can perform another test, were you are looking for people who live
 in `Dallas`, or are older than `50`. The same procedure as above
-applied. The different is the logical operator used. This time we want
+applied. The difference is the logical operator used. This time we want
 the `|`, OR, operator. It will only return `FALSE` if its operands are
 `FALSE`.
 
@@ -548,7 +548,7 @@ line by line, rather than having a long line of pipes.
 
 ## `select`
 
-`select` is a function that lets us *select* specific columns by name,
+`select` is a function that let’s us *select* specific columns by name,
 without using quotations. This is much like what we have learned earlier
 with subsetting. The output for this function will be a dataframe.
 
@@ -556,7 +556,7 @@ with subsetting. The output for this function will be a dataframe.
 ages <- select(dat, Age)
 ```
 
-Lets use our new `%>%` operator.
+Let use our new `%>%` operator.
 
 ``` r
 ages <- dat %>% 
@@ -609,9 +609,9 @@ dallas_and_g50_income
     ## 10  47872
     ## # ... with 7,173 more rows
 
-Here we not only *filtered* a rows with `"Dallas"` and greater than
-`50`, but we then piped that through to `select` and extracted the
-`Income` column.
+Here we not only *filtered* rows with `"Dallas"` and greater than `50`,
+but we then piped that through to `select` and extracted the `Income`
+column.
 
 In other words, we managed to *filter* rows from a dataframe based on
 some condition, and then *pipe* that output into `select` and *select*
@@ -624,7 +624,7 @@ operation over it, or create a new column. We will go through two
 examples.
 
 On our last example we extracted the `Income` column. However, these are
-some big numbers\! Lets divide all of them by 1000.
+some big numbers\! Let’s divide all of them by 1000.
 
 ``` r
 dallas_and_g50_income <- dat %>% 
@@ -651,9 +651,9 @@ dallas_and_g50_income
     ## # ... with 7,173 more rows
 
 Amazing\! Every element in the column has changed to its quotient.
-However, we should be more explicit as to what we mean by `Income`. Lets
-repeat this operation, but this time create new column with these
-quotients, rather than replacing the originals.
+However, we should be more explicit as to what we mean by `Income`.
+Let’s repeat this operation, but this time create a new column with
+these quotients, rather than replacing the originals.
 
 ``` r
 dallas_and_g50_income <- dat %>% 
@@ -829,9 +829,14 @@ function on `Income_thousands`, the operation is performed group wise.
 # Visualization
 
 So far we have covered how to import your data, subset it, and transform
-it. However, an important part of exploring and communicating your data
-is through **visualizations**. A strong visualization can go a long way
-in communicating your results.
+it. It is time to learn how to visualize data\! This is something you
+can spend hours doing since effective plots can enable you to see
+patterns and difference that may not stand out when staring at a
+dataframe.
+
+An important aspect of data visualization is that this is the main way
+you will be communicating your data to everyone. A strong visualization
+can go a long way in summarizing your results.
 
 Hadley Wickham, the Chief Scientist of RStudio and author of the
 `tidyverse` packages, said in OpenVis 2017 conference:
@@ -841,74 +846,105 @@ Hadley Wickham, the Chief Scientist of RStudio and author of the
 > computer program could have told you about. However, since data
 > visualization is fundamentally a human process, it will not scale.”
 
-Visualization will help you understand you aspects of your data that
-would simply not be apparent if you kept it in a dataframe. For example,
-our toy dataset has 150000 entries\! It would be quite challenging to
-see what the distribution of `Income` looks like by just staring at the
+Visualization will help you understand aspects of your data that would
+simply not be apparent if you kept it in a dataframe. For example, our
+toy dataset has 150000 entries\! It would be quite challenging to see
+what the distribution of `Income` looks like by just staring at the
 column\!
 
 Moreover, since it is important that we make an effort to make data
 visualizations that accurately represent the results. There are multiple
-ways to mislead people with data, I encourage you to look for examples
-of misleading visualizations.
+ways to mislead people with data. I encourage you to look for examples
+of misleading visualizations, and learn how to spot them.
+
+**QUESTIONS**: What makes a bad graph? What makes a good graph?
 
 ## Types of plots
 
 There are multiple types of plots, and they are all best suited for
-particular types of data. I am going to cover some basic types of plots,
-the ones that you are likely to use the most. You should explore other
-ways of visualizing your data. Other plots that may be of interest are,
-heat maps, scatterplot matrices, overlaying distributions, and violin
-plots.
+particular types of data.
 
-### Scatter plot
-
-You have likely encountered many scatter plots in your life time. This
-type of plot is best suited to identify any relationships, correlations,
-between two variables, columns. One variable is placed at the `x-axis`
-and the second variable is placed at the `y-axis`.
-
-The scatter plot below is representing two variables that are normally
-distributed. The edges of the graph represent the tails of the normal
-distributions. The darker, more concentrated, center represents the
-normal distribution peaks.
-
-![](README_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
-
-### Line plot
-
-Line plots well suited for representing a change of a variable over
-time. A classic example would be population growth.
-
-Below is a line graph show an exponential increase over some unit time.
-
-![](README_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+I will be covering some common plots. Afterwards, you should venture out
+and explore new and amazing ways to communicate your data. For example,
+other plots that may be of interest are, heat maps, scatterplot
+matrices, overlaying distributions, and violin plots.
 
 ### Histograms
 
-Histograms are a great way to understand how a single variable is
-distributed.
+Numerical data can be displayed as a histogram, which represents the
+frequency of a range of values. You can think of a histogram as plotting
+one dimensional data, since you are only plotting a single variable on
+the x-axis.
 
-The `y-axis` represents the number of events at that `x-value`. It is
-important to be cautious when intepretting and creating histograms. The
-distribution you obser may depend on the number of *bins* that are used.
-You can think of the number of bins as the number of columns in th
-histogram.
+A histogram communicated the frequency of our data via rectangular bars,
+also known as *bins*. Each bin is of equal width.
 
-The histogram below has 30 bins, as stated by the
-    warning.
+The main benefit of a histogram is that it allows you to see how your
+data is distributed.
 
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+  - Is my data *symmetrically distributed*? For example, uniform or
+    normal distributions.
+  - Is my data *asymmetrically distributed*? For example,
+    positive/negative skew.
+
+By distribution, I mean where are the most common values? Where are the
+least common values? Is the data *normally distributed*, *skewed*,
+*uniform*?
+
+In other words, what is the *modality* of my distribution? You data may
+have two peaks, which would make it bimodal. or it could have more than
+two peaks. Distribution with multiple peaks can be symmetrical or
+asymmetrical.
+
+A crucial decision to be made when drawing a histogram is the number of
+bins you will use. This can affect how your distribution is rendered.
+There are mathematical methods to obtain a suitable number of bins.
+Sturge’s rule is a common one, but there are many others. Do not think
+of these rules as an absolute.
+
+Below is a histogram representing a normal distribution.
+
+``` r
+ggplot() +
+  geom_histogram(bins=50, aes(x=rnorm(1000, 70, 35))) +
+  xlab("X")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+
+The following histograms have a positive skew. Peaking at the left most
+side, with a tail that stretches towards the right. Notice the
+differences between then in regard to the number of bins.
+
+![](README_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+
+### Scatter plot
+
+If you want to investigate the relationship between two numerical
+values, you can use a scatter plot. For example you can visually
+indetify correlations, or clustering, between your two variables.
+
+A scatter plot can also be thought as plotting two dimensional data,
+since you are now plotting variables in your x- and y-axis.
+
+The x-axis is the explanatory variable, a *type* of independent
+variable.
+
+The y-axis is the response variable, what you are trying to gain a
+conclusion from.
+
+You may recall seeing scatter plots when analyzing flow cytometry data.
 
 ![](README_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
 
-Here is the same hisogram with 60 bins…
+### Line plot
+
+Line plots are best suited for showing trends, a relationship, over
+time. A line graph is built by connecting data points in your plot.
+
+Below is a line graph show an exponential increase over some unit time.
 
 ![](README_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
-
-And, with 10 bins…
-
-![](README_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
 
 ### Bar chart
 
@@ -919,13 +955,16 @@ Below there is a bar chart with some value on the `y-axis` being
 compared between category `P1` and `P2`. We can quickly see that `P2` is
 greater in value than `P1`.
 
-![](README_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
 
 ### Box plot
 
-Box plots are a way of comparing the distribution of multiple variables.
+A box plot is a way of visualizing relationships between a numerical and
+categorial variable. This would be similar to comparing multiple
+histograms. A box plot uses lines and a rectangle to display quantiles,
+median, and range of values.
 
-![](README_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
 
 ## `ggplot2`
 
@@ -948,7 +987,7 @@ the first thing you have to do is get your canvas\!
 ggplot()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
 
 The `ggplot` function will initiate the canvas, also called *frame*,
 that will hold your plot. You will typically pass two arguments onto
@@ -961,7 +1000,7 @@ clicking on this
 [link](https://ggplot2.tidyverse.org/articles/ggplot2-specs.html).
 
 Once you have created your canvas and given it your data and aesthetics,
-we must then tell `ggplot` what type of plot we want. Lets go for a
+we must then tell `ggplot` what type of plot we want. Let’s go for a
 scatter plot.
 
 ``` r
@@ -969,7 +1008,7 @@ ggplot(df, aes(x=betaX, y=betaY)) +
   geom_point(alpha=0.2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
 
 You perform brush stroked on your canvas by using the `+` operator,
 followed by some function. In this case, we used `geom_point`. This has
@@ -978,8 +1017,8 @@ two parts to it:
   - `geom` tells R that we are adding a geometric feature to our canvas
   - `point` tells R what geometric feature we are adding
 
-Within `geom_point`, I chose to added `alpha=0.2`. Why was that? There
-are a lot of data point\! 5000 to be exact, so it was easier to see the
+Within `geom_point`, I chose to add `alpha=0.2`. Why was that? There are
+a lot of data point\! 5000 to be exact, so it was easier to see the
 entire plot if we made each point a bit transparent. The lower alpha,
 the more transparent your point will be.
 
@@ -991,7 +1030,7 @@ ggplot() +
   geom_point(aes(x=df$betaX, y=df$betaY), alpha=0.2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
 
 If you want to change the name of your axis, and give your plot a title,
 use the `xlab`, `ylab`, and `ggtitle` functions.
@@ -1004,7 +1043,7 @@ ggplot(df, aes(x=betaX, y=betaY)) +
   ggtitle("This is a title")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
 
 Hmmmm, the title is not centered… That’s a bummer. Well we can add a
 `theme` to fix that\!
@@ -1018,7 +1057,7 @@ ggplot(df, aes(x=betaX, y=betaY)) +
   theme(plot.title=element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
 
 Within our `theme`, we assign `element_text(hjust=0.5)` to `plot.title`…
 
@@ -1041,7 +1080,7 @@ ggplot() +
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](README_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
 
 Here we added a histogram of `betaX` ontop of our scatter plot. However,
 we had a huge oversight\! The y-axis of the histogram is much greater
@@ -1052,7 +1091,8 @@ certain that these are clear and not misleading to the viewers.
 
 ### Visualizing our data
 
-Lets remind ourselves about what variables are present in our dataframe.
+Let’s remind ourselves about what variables are present in our
+dataframe.
 
 ``` r
 colnames(dat)
@@ -1075,7 +1115,7 @@ ggplot(dat, aes(x=Income)) +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
 
 I admit, I went a bit overboard with the shading\! However, this is a
 perfect learning moment:
@@ -1089,7 +1129,7 @@ In the above graph, I introduced four new aspects of `ggplot2`:
   - You can have `aes` in the call to `ggplot` and `geom_...`.
   - `fill=..count..` shades your plot according to *density*
   - `labs` is an all in one way of adding a title, x-label, and y-label
-  - `bins` lets you specify how many *bins* you want your histogram to
+  - `bins` let’s you specify how many *bins* you want your histogram to
     have. You can be more specific and assigned a vector to `breaks`,
     giving you more control over how your histogram will look.
 
@@ -1109,7 +1149,7 @@ dat %>%
     theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-51-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
 
 This time we included our trusty `dplyr` functions and `%>%`. The same
 concept as before applies in this case, since it is just feeding the
@@ -1136,7 +1176,7 @@ You may find it better to store the wrangled dataframe into a new
 variable and plot that.
 
 I was googling a bit trying to find at what income range is considered
-middle class. They were all around $45,000 to $120,000, so lets go with
+middle class. They were all around $45,000 to $120,000, so let’s go with
 that and plot the middle class’s distribution.
 
 The first method I show you is quick and dirty way of getting a graph
@@ -1181,7 +1221,7 @@ ggplot() +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-51-1.png)<!-- -->
 
 The above code is simply using `dplyr` functions to split our original
 dataframe into three parts, the upper, middle, and lower classes. We
@@ -1213,7 +1253,7 @@ stuff. What is important to realize is that objects, such as an image,
 are stored in memory. Our histogram variable simply store an where that
 image can be located in memory, like the address for your house.
 
-Lets get to the cool way of doing
+Let’s get to the cool way of doing
 it\!
 
 ``` r
@@ -1223,14 +1263,12 @@ get_class_incomes <- function(incomes) {
 }
 
 # Returns "upper", "middle", or "lower", depending on magnitude of income
-get_class_income <- function(income) {
-  UPPER = 120000
-  LOWER = 45000
-  if (income > UPPER) {
+get_class_income <- function(income, upper=120000, lower=45000) {
+  if (income > upper) {
     return("upper")
-  } else if (income >= LOWER & income <= UPPER) {
+  } else if (income >= lower & income <= upper) {
     return("middle")
-  } else if (income < LOWER) {
+  } else if (income < lower) {
     return("lower")
   }
 }
@@ -1250,9 +1288,9 @@ ggplot(dat_income_class) +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
 
-Oh gosh\! That looks like a lot to take in\! Lets break down:
+Oh gosh\! That looks like a lot to take in\! Let’s break down:
 
 1.  Define a function, `get_class_incomes`, that takes in a vector of
     incomes (integers), and applies a second function,
@@ -1263,11 +1301,11 @@ Oh gosh\! That looks like a lot to take in\! Lets break down:
 
 <!-- end list -->
 
-  - Greater than a constant variable `UPPER`. If `TRUE`, return
-    `"upper"`, else, go to next test
-  - Greater than or equal to `LOWER` `&` lower than or equal to `UPPER`.
+  - Greater than variable `upper`. If `TRUE`, return `"upper"`, else, go
+    to next test
+  - Greater than or equal to `lower` `&` lower than or equal to `upper`.
     If `TRUE`, return `"middle"`, else, go to next test
-  - Lower than `LOWER`. If `TRUE`, return `"lower"`.
+  - Lower than `lower`. If `TRUE`, return `"lower"`.
 
 <!-- end list -->
 
@@ -1290,7 +1328,7 @@ Oh gosh\! That looks like a lot to take in\! Lets break down:
     categorical data, and thus assigns each category (upper, middle, and
     lower) its own color.
 
-**SIDE NOTE**: Do not worry if that was too much, such go over it a
+**SIDE NOTE**: Do not worry if that was too much, just go over it a
 couple of times. I will be making other R guides talking about
 conditionals, writing functions, and built-ins such as `vapply`.
 
@@ -1328,16 +1366,16 @@ ggplot(dat_income_class) +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
 
-Holy molly, we have used the `facet_wrap` function on `City` once more.
+Holy moly, we have used the `facet_wrap` function on `City` once more.
 This time it is much cooler. The colors we so previous retain their
 meaning in each subplot. So we can now visually infer that Dallas may
 have the greatest lower class proportions. Mountain View, on the other
 hand, seems to have a great amount of upper class individuals. And New
 York City has the largest amount of middle class.
 
-Lets double check this with a bar plot\!
+Let’s double check this with a bar plot\!
 
 ``` r
 total_per_class <- dat_income_class %>%
@@ -1359,7 +1397,7 @@ ggplot(total_per_class) +
         axis.text.x=element_text(angle=45, hjust=1))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
 
 The bar plot introduced us to three new ideas:
 
