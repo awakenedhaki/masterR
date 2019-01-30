@@ -899,12 +899,6 @@ of these rules as an absolute.
 
 Below is a histogram representing a normal distribution.
 
-``` r
-ggplot() +
-  geom_histogram(bins=50, aes(x=rnorm(1000, 70, 35))) +
-  xlab("X")
-```
-
 ![](README_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
 
 The following histograms have a positive skew. Peaking at the left most
@@ -1152,14 +1146,10 @@ munged dataframe into `ggplot`, and from `%>%` you begin using `+`.
 
 There are two things that I want you to get out of this.
 
-1.  I used `fill=..count..` again, but this time to prove a different
-    point. This is showing us the density of of each **individual**
-    plot. Notice how `Boston` is dark while `New York City` is lighter.
-    This is because of the fact that the color gradient is set to the
-    **highest value** overall. Each graph is *sharing* a y-axis.
-    Therefore you would not be able to observe the density of your
-    counts using this method, since `New York City` is skewing the
-    gradient.
+1.  I used `fill=..count..` again. Notice how `Boston` is dark while
+    `New York City` is lighter. This is because New York City has the
+    greatest amount of counts, and thus, is a greater portion of our
+    data.
 2.  `facet_wrap(~ City)`, this is a new function\! This works just like
     group\_by, but rather than doing some computation, you are producing
     a plot\! It is group the `Income` of each person by their respective

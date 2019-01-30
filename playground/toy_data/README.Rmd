@@ -430,7 +430,7 @@ histogram_example <- rgamma(1000,4,4)
 
 Below is a histogram representing a normal distribution.
 
-```{r}
+```{r echo=FALSE}
 ggplot() +
   geom_histogram(bins=50, aes(x=rnorm(1000, 70, 35))) +
   xlab("X")
@@ -676,7 +676,7 @@ This time we included our trusty `dplyr` functions and `%>%`. The same concept a
 
 There are two things that I want you to get out of this. 
 
-1. I used `fill=..count..` again, but this time to prove a different point. This is showing us the density of of each __individual__ plot. Notice how `Boston` is dark while `New York City` is lighter. This is because of the fact that the color gradient is set to the __highest value__ overall. Each graph is _sharing_ a y-axis. Therefore you would not be able to observe the density of your counts using this method, since `New York City` is skewing the gradient.
+1. I used `fill=..count..` again. Notice how `Boston` is dark while `New York City` is lighter. This is because New York City has the greatest amount of counts, and thus, is a greater portion of our data.
 2. `facet_wrap(~ City)`, this is a new function! This works just like group_by, but rather than doing some computation, you are producing a plot! It is group the `Income` of each person by their respective `City` and the produce a histogram for each `City`. Take note of the tilde, `~` operator and that you do __not__ have to use quotation marks.
 
 You may find it better to store the wrangled dataframe into a new variable and plot that.
