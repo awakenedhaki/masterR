@@ -42,14 +42,14 @@ is_valid <- require(tidyverse)
 
     ## Loading required package: tidyverse
 
-    ## ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
     ## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
     ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
     ## ✔ readr   1.1.1     ✔ forcats 0.3.0
 
-    ## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -1334,6 +1334,10 @@ much clearer. If your code works, but people can’t understand it, it is
 not as useful. For the functions I wrote down, they are simple and
 self-documenting.
 
+Here is a side-by-side comparison:
+
+![](README_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
+
 Why go through all this trouble?
 
   - Well for starters, this `colors` generously provided a legend for
@@ -1361,16 +1365,92 @@ ggplot(dat_income_class) +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
 
 Holy moly, we have used the `facet_wrap` function on `City` once more.
-This time it is much cooler. The colors we so previous retain their
-meaning in each subplot. So we can now visually infer that Dallas may
-have the greatest lower class proportions. Mountain View, on the other
-hand, seems to have a great amount of upper class individuals. And New
-York City has the largest amount of middle class.
+The colors we saw previous retain their meaning in each subplot. So we
+can now visually infer that Dallas may have the greatest lower class
+proportions. Mountain View, on the other hand, seems to have a great
+amount of upper class individuals. And New York City has the largest
+amount of middle class.
 
-Let’s double check this with a bar plot\!
+I said that we can visually infer this information, however, it is still
+not as clear as it could be. What can we use to compare numerical,
+`Income`, and categorial, `City`, variables? A box plot\!
+
+``` r
+ggplot(dat_income_class) +
+  geom_boxplot(aes(x=City, y=Income)) +
+  ggtitle("Income Dist. per City") +
+  theme(plot.title=element_text(hjust=0.5),
+        axis.text.x=element_text(hjust=1, angle=45))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
+
+I added a new argument on the `theme` function. This time we passed
+`element_text` onto `axis.text.x` to adjust how our x-axis text is
+displayed. We have already seen `hjust`, but `angle` is new\! Keeping
+true to the intuitive naming of functions and arguments, `angle`
+controls the *angle* of the text. Here we set the angle of our x-axis
+text of 45 degrees.
+
+With this box plot we can easily see that Dallas has the lowest income
+distribution and that Mountain View has the highest. We can further
+divide each city by `income_class` using the `fill` argumnet within
+`aes`.
+
+``` r
+ggplot(dat_income_class) +
+  geom_boxplot(aes(x=City, 
+                   y=Income, 
+                   fill=income_class)) +
+  labs(title="Income Dist. per City", 
+       fill="Income Class") +
+  theme(plot.title=element_text(hjust=0.5),
+        axis.text.x=element_text(hjust=1, angle=45))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
+
+The addition of `fill` shows us that there are two income classes per
+City. However, if there is a lower class present in a city, there are no
+upper class. The only two cities with lower class in our data is Dallas
+and Washington D.C.. It seems that while there are many cities with
+upper class, Mountain View has the greatest range of income in this
+category and the greatest amount of people.
+
+The box plot is still not as crisp as it should be. It can be hard to
+distinguish the boundaries between cities when comparing box plots.
+There is definitive improvement for this visualization.
+
+In the interest to show you another `ggplot2` graph, here is the violin
+plot version of the above box plots. Notice that only two things changed
+in the code.
+
+1.  From `geom_boxplot` to `geom_violin`
+2.  A new argument called `draw_quantile`, set at the first, second and
+    third quantile. Without `draw_quantile`, the violin plot would not
+    specify where the quantiles. However, you can tell where the second
+    quantile, the median, is located, given that it is the widest part
+    in each componenet.
+
+<!-- end list -->
+
+``` r
+ggplot(dat_income_class) +
+  geom_violin(aes(x=City, 
+                  y=Income),
+              draw_quantiles = c(0.25, 0.5, 0.75)) +
+  ggtitle("Income Dist. per City") +
+  theme(plot.title=element_text(hjust=0.5),
+        axis.text.x=element_text(hjust=1, angle=45))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
+
+Finally, let’s make a bar plot to see how many people are in each class
+per city.
 
 ``` r
 total_per_class <- dat_income_class %>%
@@ -1392,7 +1472,7 @@ ggplot(total_per_class) +
         axis.text.x=element_text(angle=45, hjust=1))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
 
 The bar plot introduced us to three new ideas:
 
@@ -1401,12 +1481,6 @@ The bar plot introduced us to three new ideas:
     `"dodge"`. This allows for grouped bar plots to not be stacked on
     top of each other. Do **not** stack our bar plots, it can be
     difficult to interpret.
-3.  `axis.text.x` is given `element_text` with arguments `angle = 45`
-    and `hjust = 1`. What on earth? Since the `City` names were long,
-    they began overlapping. We can set the angle of our x-axis lables,
-    by giving the setting a new value to `angle` in degrees. We then
-    adjust our labels so that they are as close to the actual plot as
-    possible.
 
 The bar plot is good for a qualitative assessment, but we should really
 check the numbers. For things like Dallas’ and Mountain View’s count in
