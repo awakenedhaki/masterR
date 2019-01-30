@@ -42,14 +42,14 @@ is_valid <- require(tidyverse)
 
     ## Loading required package: tidyverse
 
-    ## ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
     ## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
     ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
     ## ✔ readr   1.1.1     ✔ forcats 0.3.0
 
-    ## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -886,15 +886,10 @@ data is distributed.
     normal distributions.
   - Is my data *asymmetrically distributed*? For example,
     positive/negative skew.
-
-By distribution, I mean where are the most common values? Where are the
-least common values? Is the data *normally distributed*, *skewed*,
-*uniform*?
-
-In other words, what is the *modality* of my distribution? You data may
-have two peaks, which would make it bimodal. or it could have more than
-two peaks. Distribution with multiple peaks can be symmetrical or
-asymmetrical.
+  - What is the *modality* of my distribution? Your data may have two
+    peaks, which would make it bimodal. or it could have more than two
+    peaks. Distribution with multiple peaks can be symmetrical or
+    asymmetrical.
 
 A crucial decision to be made when drawing a histogram is the number of
 bins you will use. This can affect how your distribution is rendered.

@@ -420,10 +420,7 @@ The main benefit of a histogram is that it allows you to see how your data is di
 
 * Is my data _symmetrically distributed_? For example, uniform or normal distributions.
 * Is my data _asymmetrically distributed_? For example, positive/negative skew.
-
-By distribution, I mean where are the most common values? Where are the least common values? Is the data _normally distributed_, _skewed_, _uniform_? 
-
-In other words, what is the _modality_ of my distribution? You data may have two peaks, which would make it bimodal. or it could have more than two peaks. Distribution with multiple peaks can be symmetrical or asymmetrical.
+* What is the _modality_ of my distribution? Your data may have two peaks, which would make it bimodal. or it could have more than two peaks. Distribution with multiple peaks can be symmetrical or asymmetrical.
 
 A crucial decision to be made when drawing a histogram is the number of bins you will use. This can affect how your distribution is rendered. There are mathematical methods to obtain a suitable number of bins. Sturge's rule is a common one, but there are many others. Do not think of these rules as an absolute.
 
