@@ -6,6 +6,14 @@ Functions
 1.  [Introduction to Functions in R](#introduction-to-functions-in-r)
 2.  [Designing a function](#designing-a-function)
 3.  [Writing a function](#writing-a-function)
+
+<!-- end list -->
+
+  - [Addition](#addition)
+  - [Geometric mean](#geometric-mean)
+
+<!-- end list -->
+
 4.  [Lexical scoping](#lexical-scoping)
 5.  [Operators](#operators)
 
@@ -120,7 +128,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.00157094 secs
+    ## Time difference of 0.001804829 secs
 
 ``` r
 # Our mean function
@@ -135,7 +143,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.001629829 secs
+    ## Time difference of 0.001708984 secs
 
 The difference seems miniscule\! If you call these functions multiple
 times, you will see that our function is sometimes faster than base R’s.
@@ -154,7 +162,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.3205788 secs
+    ## Time difference of 0.313642 secs
 
 ``` r
 start <- Sys.time()
@@ -168,7 +176,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 2.055863 secs
+    ## Time difference of 1.939636 secs
 
 Oof\! This time around our input is 6 orders of magnitude greater that
 our first test. We begin to see a massive difference. Our `mean2` takes
@@ -197,7 +205,7 @@ print(mean2, envir=.GlobalEnv)
     ##   }
     ##   element_sum / length(x)
     ## }
-    ## <bytecode: 0x7f8cf494ed58>
+    ## <bytecode: 0x7f7ef5839510>
 
 R gives us the implementation of `mean2`. It also gives us `bytecode:
 ...`, all this is telling it where the function can be found in memory,
@@ -219,7 +227,7 @@ These are the questions that you should be thinking about when writing a
 function:
 
   - What is a relevant name?
-      - It is best if you avoid to give your function a name that is
+      - It is best if you avoid to giving your function a name that is
         already taken, already exists within the *namespace*.
   - What is my functions *signature*?
       - What *type of data* am I operating on?
@@ -328,7 +336,7 @@ environment(mean2)
 
     ## <environment: R_GlobalEnv>
 
-Onces you have figured out your function signature, purpose, examples,
+Onces you have figured out your function’s signature, purpose, examples,
 and a relevant name, you are ready to actually get to some coding.
 
 Actually, you need to know one last thing\! When you function finishes
@@ -723,10 +731,13 @@ function would.
 ``` python
 # This is also python code
 class MyString:
+
   def __init__(self, x):
     self.x = x
+    
   def __repr__(self):
     return self.x
+    
   def __add__(self, other):
     return 2
     
