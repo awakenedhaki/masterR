@@ -7,24 +7,22 @@ output:
 
 # Table of Contents
 
-1. [While loops](#while-loops)
-    * [Structure](#structure)
-    * [Overview](#overview)
+1. [While loop](#while-loop)
 2. [For loop](#for-loop)
     * [For-each](#for-each)
     * [For](#for)
 3. [Key words](#key-words)
 4. [`apply`](#apply)
 
-# `while` loops
+# `while` loop
 
 ## Structure
 
-```{r error=TRUE}
-while (condition) {
-    # body of loop
-}
-```
+
+    while (condition) {
+        # body of loop
+    }
+
 
 ## Overview
 
@@ -52,11 +50,9 @@ A for loop will iterate over the elemts that it is provided. There are to ways t
 
 ### Structure
 
-```{r error=TRUE}
-for (element in elements) {
-    # Body of loop
-}
-```
+    for (element in elements) {
+        # Body of loop
+    }
 
 ### Overview
 
@@ -74,11 +70,10 @@ You run no risk of an infinite loop.
 
 ### Structure
 
-```{r error=TRUE}
-for (i in seq_along(elements)) {
-    # body of loop
-}
-```
+    for (i in seq_along(elements)) {
+        # body of loop
+    }
+
 
 ### Overview
 

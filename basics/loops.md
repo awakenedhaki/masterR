@@ -3,26 +3,20 @@ Loops
 
 # Table of Contents
 
-1.  [While loops](#while-loops)
-      - [Structure](#structure)
-      - [Overview](#overview)
+1.  [While loop](#while-loop)
 2.  [For loop](#for-loop)
       - [For-each](#for-each)
       - [For](#for)
 3.  [Key words](#key-words)
 4.  [`apply`](#apply)
 
-# `while` loops
+# `while` loop
 
 ## Structure
 
-``` r
-while (condition) {
-    # body of loop
-}
-```
-
-    ## Error in eval(expr, envir, enclos): object 'condition' not found
+    while (condition) {
+        # body of loop
+    }
 
 ## Overview
 
@@ -72,13 +66,9 @@ to ways to implement for loops.
 
 ### Structure
 
-``` r
-for (element in elements) {
-    # Body of loop
-}
-```
-
-    ## Error in eval(expr, envir, enclos): object 'elements' not found
+    for (element in elements) {
+        # Body of loop
+    }
 
 ### Overview
 
@@ -103,13 +93,9 @@ You run no risk of an infinite loop.
 
 ### Structure
 
-``` r
-for (i in seq_along(elements)) {
-    # body of loop
-}
-```
-
-    ## Error in eval(expr, envir, enclos): object 'elements' not found
+    for (i in seq_along(elements)) {
+        # body of loop
+    }
 
 ### Overview
 
