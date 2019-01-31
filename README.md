@@ -3,13 +3,13 @@
 ## Table of Contents
 
 1. [Basics](../base/)
-    * [Operators](../master/base/operators.md)
-    * [Data Types](../master/base/types.md)
-    * [Utilities](../master/base/utils.md)
-    * [Conditionals](../master/base/cond.md)
-    * [Loops](../master/base/loops.md)
-    * [Functions](../master/base/functions.md)
-    * [`apply`](../master/base/apply.md)
+    * [Operators](../master/basics/operators.md)
+    * [Data Types](../master/basics/objects.md)
+    * [Utilities](../master/basics/utils.md)
+    * [Conditionals](../master/basics/cond.md)
+    * [Loops](../master/basics/loops.md)
+    * [Functions](../master/basics/functions.md)
+    * [`apply`](../master/basics/apply.md)
 2. [Playground](../master/playground/)
     * [Toy Data Set](../master/playground/toy_data/)
     * [Titanic](../master/playground/titanic/)
@@ -17,5 +17,7 @@
 __TODO:__
 
 * Basics
+   * Fix lexical scoping
 * Typos in Toy Data Set
+   * Add factors?
 * Typos in titanic
