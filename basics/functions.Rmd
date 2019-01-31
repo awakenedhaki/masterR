@@ -10,8 +10,8 @@ output:
 1. [Introduction to Functions in R](#introduction-to-functions-in-r)
 2. [Designing a function](#designing-a-function)
 3. [Writing a function](#writing-a-function)
-  * [Addition](#addition)
-  * [Geometric mean](#geometric-mean)
+    * [Addition](#addition)
+    * [Geometric mean](#geometric-mean)
 4. [Lexical scoping](#lexical-scoping)
 5. [Operators](#operators)
 
