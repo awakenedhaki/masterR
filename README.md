@@ -4,7 +4,7 @@
 
 1. [Basics](../base/)
     * [Operators](../master/basics/operators.md)
-    * [Data Types](../master/basics/objects.md)
+    * [R Objects](../master/basics/objects.md)
     * [Utilities](../master/basics/utils.md)
     * [Conditionals](../master/basics/cond.md)
     * [Loops](../master/basics/loops.md)
