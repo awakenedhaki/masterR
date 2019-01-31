@@ -50,11 +50,46 @@ search()
     ## [7] "package:methods"   "Autoloads"         "package:base"
 
 This is how R knows what you mean when you ask it to give you the mean
-of some data. It sees `mean` and recognizes that `mean` is a function
-defined in the base R package. The base R package is imported by default
-when you run R. All the R objects we define in this session will be
-stored in `.GlobalEnv`. If you want to know where all these packages and
-tools can be found in your own computer, use the `searchpaths` function.
+of some data. It sees `mean` searches it through the list above. R
+recognizes that `mean` is a function defined in the base R package. The
+base R package is imported by default when you run R. All the R objects
+we define in this session, variables and functions, will be stored in
+`.GlobalEnv`. If you want to know where all these packages and tools can
+be found in your own computer, use the `searchpaths` function.
+
+The first place R looks up for an object is in `.GlobalEnv`. After this,
+R looks up objects in the order of the list. `.GlobalEnv` is always the
+first componenent and `base` is the last.
+
+``` r
+library(dplyr)
+```
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
+search()
+```
+
+    ##  [1] ".GlobalEnv"        "package:dplyr"     "package:stats"    
+    ##  [4] "package:graphics"  "package:grDevices" "package:utils"    
+    ##  [7] "package:datasets"  "package:methods"   "Autoloads"        
+    ## [10] "package:base"
+
+After importing `dplyr`, we can see that it has been added to our search
+list after `.GlobalEnv`. We can also see a conflict emerge. This is
+because `dplyr` has two functions with the same name as two functions in
+the default `stats` package. Since `dplyr` is looked up before `stats`,
+its functions will be used.
 
 Ok, so this is how R knows *where* to find the functions, but how does
 it actually compute the mean? Each function will have an underlying
@@ -122,7 +157,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.003541946 secs
+    ## Time difference of 0.001575947 secs
 
 ``` r
 # Our mean function
@@ -137,7 +172,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.001587868 secs
+    ## Time difference of 0.001646996 secs
 
 The difference seems miniscule\! If you call these functions multiple
 times, you will see that our function is sometimes faster than base R’s.
@@ -156,7 +191,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.3075209 secs
+    ## Time difference of 0.3139009 secs
 
 ``` r
 start <- Sys.time()
@@ -170,7 +205,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 2.331559 secs
+    ## Time difference of 1.96285 secs
 
 Oof\! This time around our input is 6 orders of magnitude greater that
 our first test. We begin to see a massive difference. Our `mean2` takes
@@ -199,7 +234,7 @@ print(mean2, envir=.GlobalEnv)
     ##   }
     ##   element_sum / length(x)
     ## }
-    ## <bytecode: 0x7fcc31773d48>
+    ## <bytecode: 0x7fc8e9177148>
 
 R gives us the implementation of `mean2`. It also gives us `bytecode:
 ...`, all this is telling it where the function can be found in memory,

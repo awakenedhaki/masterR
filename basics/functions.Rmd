@@ -37,7 +37,16 @@ R has this cool function called `search` that output a vector of characters, whe
 search()
 ```
 
-This is how R knows what you mean when you ask it to give you the mean of some data. It sees `mean` and recognizes that `mean` is a function defined in the base R package. The base R package is imported by default when you run R. All the R objects we define in this session will be stored in `.GlobalEnv`. If you want to know where all these packages and tools can be found in your own computer, use the `searchpaths` function.
+This is how R knows what you mean when you ask it to give you the mean of some data. It sees `mean` searches it through the list above. R recognizes that `mean` is a function defined in the base R package. The base R package is imported by default when you run R. All the R objects we define in this session, variables and functions, will be stored in `.GlobalEnv`. If you want to know where all these packages and tools can be found in your own computer, use the `searchpaths` function.
+
+The first place R looks up for an object is in `.GlobalEnv`. After this, R looks up objects in the order of the list. `.GlobalEnv` is always the first componenent and `base` is the last.
+
+```{r}
+library(dplyr)
+search()
+```
+
+After importing `dplyr`, we can see that it has been added to our search list after `.GlobalEnv`. We can also see a conflict emerge. This is because `dplyr` has two functions with the same name as two functions in the default `stats` package. Since `dplyr` is looked up before `stats`, its functions will be used.
 
 Ok, so this is how R knows _where_ to find the functions, but how does it actually compute the mean? Each function will have an underlying implementation. This implementation will define how your function behaves. 
 
