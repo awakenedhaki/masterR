@@ -6,14 +6,8 @@ Functions
 1.  [Introduction to Functions in R](#introduction-to-functions-in-r)
 2.  [Designing a function](#designing-a-function)
 3.  [Writing a function](#writing-a-function)
-
-<!-- end list -->
-
-  - [Addition](#addition)
-  - [Geometric mean](#geometric-mean)
-
-<!-- end list -->
-
+      - [Addition](#addition)
+      - [Geometric mean](#geometric-mean)
 4.  [Lexical scoping](#lexical-scoping)
 5.  [Operators](#operators)
 
@@ -128,7 +122,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.001804829 secs
+    ## Time difference of 0.003541946 secs
 
 ``` r
 # Our mean function
@@ -143,7 +137,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.001708984 secs
+    ## Time difference of 0.001587868 secs
 
 The difference seems miniscule\! If you call these functions multiple
 times, you will see that our function is sometimes faster than base R’s.
@@ -162,7 +156,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.313642 secs
+    ## Time difference of 0.3075209 secs
 
 ``` r
 start <- Sys.time()
@@ -176,7 +170,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 1.939636 secs
+    ## Time difference of 2.331559 secs
 
 Oof\! This time around our input is 6 orders of magnitude greater that
 our first test. We begin to see a massive difference. Our `mean2` takes
@@ -205,7 +199,7 @@ print(mean2, envir=.GlobalEnv)
     ##   }
     ##   element_sum / length(x)
     ## }
-    ## <bytecode: 0x7f7ef5839510>
+    ## <bytecode: 0x7fcc31773d48>
 
 R gives us the implementation of `mean2`. It also gives us `bytecode:
 ...`, all this is telling it where the function can be found in memory,
