@@ -17,5 +17,7 @@
 __TODO:__
 
 * Basics
+   * Fix lexical scoping
 * Typos in Toy Data Set
+   * Add factors?
 * Typos in titanic
