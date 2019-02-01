@@ -17,6 +17,10 @@
 __TODO:__
 
 * Basics
+   * Operators
+   * R objects
+   * Utilities
+   * apply
    * Fix lexical scoping
 * Typos in Toy Data Set
    * Add factors?
