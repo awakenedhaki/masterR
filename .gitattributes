@@ -1,4 +1,0 @@
-$cat .gitattributes
-*.Rmd linguist-language=R
-*.Rmd linguist-vendored=R
-jc_ansiterm_0.1/* linguist-vendored=true
