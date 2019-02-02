@@ -12,7 +12,6 @@
     * [`apply`](../master/basics/apply.md)
 2. [Playground](../master/playground/)
     * [Toy Data Set](../master/playground/toy_data/)
-    * [Titanic](../master/playground/titanic/)
 
 __TODO:__
 
@@ -24,4 +23,3 @@ __TODO:__
    * Fix lexical scoping
 * Typos in Toy Data Set
    * Add factors?
-* Typos in titanic
