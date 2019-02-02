@@ -19,9 +19,9 @@ Rodrigo Vallejos
       - [`select`](#select)
       - [`filter`](#filter)
       - [`mutate`](#mutate)
+      - [`group_by` & `summarize`](#group_by-&-summarize)
       - [`arrange`](#arrange)
       - [`rename`](#rename)
-      - [`group_by` & `summarize`](#group_by-&-summarize)
 6.  [Visualization](#visualization)
       - [Types of plots](#types-of-plots)
           - [Histogram](#histograms)
@@ -31,34 +31,29 @@ Rodrigo Vallejos
           - [Box plot](#box-plot)
       - [`ggplot2`](#ggplot2)
           - [Grammar](#grammar)
-          - [Visualizing our
-    data](#visualizing-our-data)
+          - [Visualizing our data](#visualizing-our-data)
 
 # Setting up
 
 ``` r
-is_valid <- require(tidyverse)
+if (!require(tidyverse)) {
+  install.packages("tidyverse")
+  library(tidyverse)
+}
 ```
 
     ## Loading required package: tidyverse
 
-    ## ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
     ## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
     ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
     ## ✔ readr   1.1.1     ✔ forcats 0.3.0
 
-    ## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
-
-``` r
-if (!is_valid) {
-  install.packages("tidyverse")
-  library(tidyverse)
-}
-```
 
 The `tidyverse` is a collection of packages, such as `ggplot2` and
 `dplyr`, that have multiple tools not offered in base R. You can find
@@ -67,12 +62,12 @@ more information about the `tidyerse` by clicking on this
 
 When we import the `tidyverse`, you will see a **Conflicts** warning.
 This is of no concern. It is just informing us that certain functions
-that are defined in `dplyr` have the same name as functions in base R.
-The imported functions will be used.
+that are defined in the `dplyr` package have the same name as functions
+in base R. The imported functions will be used.
 
 **SIDE NOTE**: We can import packages through the `library` or the
 `require` functions. If a package does not exist, `library` will raise
-an error and `require` will produce a `boolean`, or `logical`. This
+an error and `require` will produce a `logical`, or `boolean`. This
 logical value represents if the import was successful, `TRUE`, or
 failed, `FALSE`.
 
@@ -86,54 +81,31 @@ value, is separated by a comma.
 
 **SIDE NOTE**: There are other ways to store data as text. The use of a
 comma could be substituted by `;`, for instance. I encourage you to find
-information of *flat files*.
+more information on *flat files*.
 
 ``` r
-path <- file.path(".", "toy_dataset.csv")
+path <- file.path("toy_dataset.csv")
 ```
 
 Above is the *path* to our data. Be sure to have downloaded and unzipped
 the data from Kaggle in the same directory, folder, as this notebook. We
 use the `file.path` function to design a *path* that is independent of
-the operating system which we may be using. For example, using the
-format of a path from Windows in a Mac would not work. We assign this
-constructed path to the `path` variable.
+the operating system which we may be using. We assign this constructed
+path to the `path` variable.
 
 For this case, `file.path` is not that useful, given that the `.csv`
 file should be resting within the working directory of this R notebook.
 
 ``` r
 dat <- read_csv(path)
-```
 
-    ## Parsed with column specification:
-    ## cols(
-    ##   Number = col_integer(),
-    ##   City = col_character(),
-    ##   Gender = col_character(),
-    ##   Age = col_integer(),
-    ##   Income = col_double(),
-    ##   Illness = col_character()
-    ## )
-
-``` r
 # This would also work, if in the same directory as notebook
 dat <- read_csv("toy_dataset.csv")
 ```
 
-    ## Parsed with column specification:
-    ## cols(
-    ##   Number = col_integer(),
-    ##   City = col_character(),
-    ##   Gender = col_character(),
-    ##   Age = col_integer(),
-    ##   Income = col_double(),
-    ##   Illness = col_character()
-    ## )
-
 After defining our path, we can call the `read_csv`, a function from the
 `readr` package, to parse through our file and store our data as a
-`tibble`. A `tibble` is a modern version of a dataframe. The main
+`tibble`. A `tibble` is a modern version of a dataframe.The main
 differences between a tibble and a dataframe are printing, subsetting,
 and recycling. You can find out more information about what that means
 by clicking on this
@@ -146,12 +118,11 @@ It is important to note that base R also has a function to parse through
 example1 <- read.csv(path, stringsAsFactors = FALSE)
 ```
 
-The `read.csv` is a wrapper function around the `read.table` function.
-With `read.csv` we would have to specify that the `strings`, or
-`characters`, in our `.csv` file, are **not** of `factor` type. We will
-explore what a `factor` is later on. There are other reasons to use
-`read_csv`, such as speed, but it does not matter for the pursposes of
-this introduction.
+The `read.csv` is a wrapper function around `read.table`. With
+`read.csv` we would have to specify that the `strings`, or `characters`,
+in our `.csv` file, are **not** of `factor` type. We will cover `factor`
+types briefly, later on. There are other reasons to use `read_csv`, such
+as speed, but it does not matter for the pursposes of this introduction.
 
 **SIDE NOTE**: If you are curious to find more information about a
 function in R, you can use the `?` operator. In the R console, type
@@ -178,11 +149,11 @@ head(dat)
     ## 5      5 Dallas Male      46  50289 No     
     ## 6      6 Dallas Female    36  50786 No
 
-Looking at the first or last few rows is good and all, but its still not
-enough to get familiar with this data. Another nifty tool is `str`,
-which is give you the *structure* of your data.
+Looking at the first or last few rows is good and all, but it’s still
+not enough to get familiar with this data. Another nifty tool is `str`,
+which gives you the *structure* of your data.
 
-  - Class of the variable being passed: `tibble`
+  - Class of the variable being passed: `tbl_df`, `tbl` and `data.frame`
   - Number of observations: `150000 obs`
   - Number of variables: `6 variables`
   - Column names
@@ -208,9 +179,9 @@ str(dat, give.attr = FALSE)
     ##  $ Illness: chr  "No" "No" "No" "No" ...
 
 You could also just want the number of observations or variables. You
-can call the `dim` function that gives you the *dimensions* of the
-inputted dataframe. The first element is the number of rows,
-observations, and then the number of columns, variables.
+can call the `dim` function that gives you the *dimensions* of an input.
+The first element is the number of rows, observations, and then the
+number of columns, variables.
 
 ``` r
 dim(dat)
@@ -228,8 +199,8 @@ colnames(dat)
     ## [1] "Number"  "City"    "Sex"     "Age"     "Income"  "Illness"
 
 Finally, there is also the `summary` function. This allows you to have a
-small report of basic descriptive statistics of dataframe’s
-    variables.
+small report of basic descriptive statistics of the dataframe’s
+variables.
 
 ``` r
 summary(dat)
@@ -273,6 +244,51 @@ summary(dat)
     ##  Mean   : 91253                     
     ##  3rd Qu.:104519                     
     ##  Max.   :177157
+
+Notice that `Illness`, `Sex`, and `City` are not giving us much useful
+information. It tells us the length of the column, the class and the
+mode. I will leave `City` as is for now, given that its current format
+will allow me to show you some other tools later on.
+
+``` r
+dat[, "Illness"] <- factor(dat$Illness)
+dat[, "Sex"] <- factor(dat$Sex)
+
+summary(dat)
+```
+
+    ##      Number           City               Sex             Age       
+    ##  Min.   :     1   Length:149999      Female:66199   Min.   :25.00  
+    ##  1st Qu.: 37502   Class :character   Male  :83800   1st Qu.:35.00  
+    ##  Median : 75001   Mode  :character                  Median :45.00  
+    ##  Mean   : 75001                                     Mean   :44.95  
+    ##  3rd Qu.:112500                                     3rd Qu.:55.00  
+    ##  Max.   :150000                                     Max.   :65.00  
+    ##      Income       Illness     
+    ##  Min.   :   584   No :137861  
+    ##  1st Qu.: 80868   Yes: 12138  
+    ##  Median : 93655               
+    ##  Mean   : 91253               
+    ##  3rd Qu.:104519               
+    ##  Max.   :177157
+
+We are now getting some more useful information. We can now tell how
+many `Female` and `Male` individuals are represented in this data. We
+can also see how many individuals are have an `Illness`.
+
+What exactly happened though? Before our `Sex` and `Income` where of
+`character` type, or just plain text. However, we know that `Female` and
+`Male` and `No` and `Yes` can be treated as *categorical* data. More
+specifically, `Sex` and `Illness` are *nominal categorical variables*.
+By using the `factor` function, R is now aware that there are two
+categories in `Sex` and in `Illness`, therefore, it will be able to
+perform certain statistics keeping these categories in mind.
+
+**SIDE NOTE**: There are also *ordinal categorial variables*. As their
+name implies, these are categorical variables with some sort of *order*.
+For example, “cold” and “hot” are categorical values. At the same time,
+we know that “cold” is less than “hot”. However, saying that “Yes” is
+greater than “No” in `Illness` does not make much sense.
 
 # Subsetting
 
@@ -328,7 +344,7 @@ dat[2, ]
 
     ## # A tibble: 1 x 6
     ##   Number City   Sex     Age Income Illness
-    ##    <int> <chr>  <chr> <int>  <dbl> <chr>  
+    ##    <int> <chr>  <fct> <int>  <dbl> <fct>  
     ## 1      2 Dallas Male     54  45084 No
 
 ## Subset using row and column:
@@ -386,7 +402,7 @@ dat[50:100, ]
 
     ## # A tibble: 51 x 6
     ##    Number City   Sex      Age Income Illness
-    ##     <int> <chr>  <chr>  <int>  <dbl> <chr>  
+    ##     <int> <chr>  <fct>  <int>  <dbl> <fct>  
     ##  1     50 Dallas Female    56  52218 No     
     ##  2     51 Dallas Female    55  47702 No     
     ##  3     52 Dallas Male      42  62512 No     
@@ -449,7 +465,7 @@ dat[dallas_and_g50, ]
 
     ## # A tibble: 7,183 x 6
     ##    Number City   Sex      Age Income Illness
-    ##     <int> <chr>  <chr>  <int>  <dbl> <chr>  
+    ##     <int> <chr>  <fct>  <int>  <dbl> <fct>  
     ##  1      2 Dallas Male      54  45084 No     
     ##  2      9 Dallas Male      51  68667 No     
     ##  3     15 Dallas Female    61  38429 No     
@@ -525,13 +541,13 @@ dat %>%
   filter(City == "Dallas" & Age > 50) %>%
   select(Income) %>%
   mutate(Income = Income / 1000) %>%
-  summarize(mean(Income))
+  summarize(meanIncome = mean(Income))
 ```
 
     ## # A tibble: 1 x 1
-    ##   `mean(Income)`
-    ##            <dbl>
-    ## 1           45.4
+    ##   meanIncome
+    ##        <dbl>
+    ## 1       45.4
 
 This looks more understandable\! We have our `dat` dataframe, and we
 slingshot that into the `filter` function. The dataframe is filtered and
@@ -545,6 +561,16 @@ pipes, and what other pipe operators are available in R.
 
 The indentation are just to make the code neater. It is easier to read
 line by line, rather than having a long line of pipes.
+
+**SIDE NOTE**: This is how you would have done it if you opted to use
+the tools from the subsetting section. the main difference is that this
+output will be a numeric vector and not a dataframe.
+
+``` r
+mean(dat$Income[dat$City == "Dallas" & dat$Age > 50] / 1000)
+```
+
+    ## [1] 45.3742
 
 ## `select`
 
@@ -679,6 +705,52 @@ dallas_and_g50_income
     ## 10  47872             47.9
     ## # ... with 7,173 more rows
 
+## `group_by` & `summarize`
+
+So far we have learned how to `select`, `filter`, and `mutate` our
+dataframes. That is already quite a lot to take in\! There are two more
+powerful tools that you should know. Let us go through an example, and
+then explain what happened.
+
+``` r
+mean_income_by_city <- dat %>% 
+  select(City, Income) %>%
+  mutate(Income_thousands = Income / 1000) %>%
+  group_by(City) %>%
+  summarize(meanIncome = mean(Income_thousands))
+
+mean_income_by_city 
+```
+
+    ## # A tibble: 8 x 2
+    ##   City            meanIncome
+    ##   <chr>                <dbl>
+    ## 1 Austin                90.3
+    ## 2 Boston                91.6
+    ## 3 Dallas                45.3
+    ## 4 Los Angeles           95.3
+    ## 5 Mountain View        135. 
+    ## 6 New York City         96.9
+    ## 7 San Diego            101. 
+    ## 8 Washington D.C.       71.0
+
+The break down:  
+1\. Create and assign the final dataframe to variable
+`mean_income_by_city`  
+2\. *Select* the `City` and `Income` columns 3. Create new variable
+`Income_thousands`, and assign it the quotient of `Income / 1000` 4.
+*Group* the dataframe by their cities 5. Calculate the mean income per
+city
+
+You can think of a `City` as a category, and there are people that fall
+under that category. We can group all the information about those people
+under that `City`. It is like creating a new dataframe for each `City`.
+
+After we group out cities, any operation we perform will be executed on
+a per group basis. For example `mutate` operates on a per element basis,
+dividing each `Income` value by `1000`. However, when we call the `mean`
+function on `Income_thousands`, the operation is performed group wise.
+
 ## `arrange`
 
 The `arrange` function sorts, or *arranges*, a specify column in
@@ -693,7 +765,7 @@ dat %>%
 
     ## # A tibble: 149,999 x 6
     ##    Number City   Sex      Age Income Illness
-    ##     <int> <chr>  <chr>  <int>  <dbl> <chr>  
+    ##     <int> <chr>  <fct>  <int>  <dbl> <fct>  
     ##  1   7897 Dallas Female    34    584 No     
     ##  2  18485 Dallas Female    43   2474 No     
     ##  3   9299 Dallas Female    31   2667 Yes    
@@ -716,7 +788,7 @@ dat %>%
 
     ## # A tibble: 149,999 x 6
     ##    Number City          Sex     Age Income Illness
-    ##     <int> <chr>         <chr> <int>  <dbl> <chr>  
+    ##     <int> <chr>         <fct> <int>  <dbl> <fct>  
     ##  1 109351 Mountain View Male     58 177157 No     
     ##  2 105282 Mountain View Male     41 176746 No     
     ##  3 109061 Mountain View Male     61 173991 No     
@@ -739,7 +811,7 @@ dat %>%
 
     ## # A tibble: 149,999 x 6
     ##    Number City   Sex      Age Income Illness
-    ##     <int> <chr>  <chr>  <int>  <dbl> <chr>  
+    ##     <int> <chr>  <fct>  <int>  <dbl> <fct>  
     ##  1 137709 Austin Male      53 103971 No     
     ##  2 137710 Austin Male      53  91257 No     
     ##  3 137711 Austin Female    38  74664 No     
@@ -764,7 +836,7 @@ dat %>%
 
     ## # A tibble: 149,999 x 6
     ##    Number City   Sex      Age Income Sick 
-    ##     <int> <chr>  <chr>  <int>  <dbl> <chr>
+    ##     <int> <chr>  <fct>  <int>  <dbl> <fct>
     ##  1      1 Dallas Male      41  40367 No   
     ##  2      2 Dallas Male      54  45084 No   
     ##  3      3 Dallas Male      42  52483 No   
@@ -780,52 +852,6 @@ dat %>%
 Note that the new name for the column is on the left side, and the old
 name is on the right.
 
-## `group_by` & `summarize`
-
-So far we have learned how to `select`, `filter`, and `mutate` our
-dataframes. That is already quite a lot to take in\! There are two more
-powerful tools that you should know. Let us go through an example, and
-then explain what happened.
-
-``` r
-mean_income_by_city <- dat %>% 
-  select(City, Income) %>%
-  mutate(Income_thousands = Income / 1000) %>%
-  group_by(City) %>%
-  summarize(mean_Income = mean(Income_thousands))
-
-mean_income_by_city 
-```
-
-    ## # A tibble: 8 x 2
-    ##   City            mean_Income
-    ##   <chr>                 <dbl>
-    ## 1 Austin                 90.3
-    ## 2 Boston                 91.6
-    ## 3 Dallas                 45.3
-    ## 4 Los Angeles            95.3
-    ## 5 Mountain View         135. 
-    ## 6 New York City          96.9
-    ## 7 San Diego             101. 
-    ## 8 Washington D.C.        71.0
-
-The break down:  
-1\. Create and assign the final dataframe to variable
-`mean_income_by_city`  
-2\. *Select* the `City` and `Income` columns 3. Create new variable
-`Income_thousands`, and assign it the quotient of `Income / 1000` 4.
-*Group* the dataframe by their cities 5. Calculate the mean income per
-city
-
-You can think of a `City` as a category, and there are people that fall
-under that category. We can group all the information about those people
-under that `City`. It is like creating a new dataframe for each `City`.
-
-After we group out cities, any operation we perform will be executed on
-a per group basis. For example `mutate` operates on a per element basis,
-dividing each `Income` value by `1000`. However, when we call the `mean`
-function on `Income_thousands`, the operation is performed group wise.
-
 # Visualization
 
 So far we have covered how to import your data, subset it, and transform
@@ -835,8 +861,8 @@ patterns and difference that may not stand out when staring at a
 dataframe.
 
 An important aspect of data visualization is that this is the main way
-you will be communicating your data to everyone. A strong visualization
-can go a long way in summarizing your results.
+you will be communicating your data to an audience. A strong
+visualization can go a long way in summarizing your results.
 
 Hadley Wickham, the Chief Scientist of RStudio and author of the
 `tidyverse` packages, said in OpenVis 2017 conference:
@@ -847,15 +873,15 @@ Hadley Wickham, the Chief Scientist of RStudio and author of the
 > visualization is fundamentally a human process, it will not scale.”
 
 Visualization will help you understand aspects of your data that would
-simply not be apparent if you kept it in a dataframe. For example, our
+simply not be apparent if you kept it as a dataframe. For example, our
 toy dataset has 150000 entries\! It would be quite challenging to see
 what the distribution of `Income` looks like by just staring at the
 column\!
 
-Moreover, since it is important that we make an effort to make data
+Moreover, it is important that we make an effort to make data
 visualizations that accurately represent the results. There are multiple
-ways to mislead people with data. I encourage you to look for examples
-of misleading visualizations, and learn how to spot them.
+ways to mislead people with data visualizations. I encourage you to look
+for examples of misleading visualizations, and learn how to spot them.
 
 **QUESTIONS**: What makes a bad graph? What makes a good graph?
 
@@ -871,13 +897,10 @@ matrices, overlaying distributions, and violin plots.
 
 ### Histograms
 
-Numerical data can be displayed as a histogram, which represents the
-frequency of a range of values. You can think of a histogram as plotting
-one dimensional data, since you are only plotting a single variable on
-the x-axis.
-
-A histogram communicated the frequency of our data via rectangular bars,
-also known as *bins*. Each bin is of equal width.
+A histogram communicates the frequency of numeric data via rectangular
+bars, also known as *bins*. Each bin is of equal width. You can think of
+a histogram as plotting one dimensional data, since you are only
+plotting a single variable on the x-axis.
 
 The main benefit of a histogram is that it allows you to see how your
 data is distributed.
@@ -893,19 +916,20 @@ data is distributed.
 
 A crucial decision to be made when drawing a histogram is the number of
 bins you will use. This can affect how your distribution is rendered.
-There are mathematical methods to obtain a suitable number of bins.
-Sturge’s rule is a common one, but there are many others. Do not think
-of these rules as an absolute.
+
+**SIDE NOTE**: There are mathematical methods to obtain a “suitable”
+number of bins. Sturge’s rule is a common one, but there are many
+others. Do not think of these as an absolute.
 
 Below is a histogram representing a normal distribution.
 
-![](README_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
 
 The following histograms have a positive skew. Peaking at the left most
 side, with a tail that stretches towards the right. Notice the
 differences between then in regard to the number of bins.
 
-![](README_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
 
 ### Scatter plot
 
@@ -924,7 +948,7 @@ conclusion from.
 
 You may recall seeing scatter plots when analyzing flow cytometry data.
 
-![](README_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
 
 ### Line plot
 
@@ -933,7 +957,7 @@ time. A line graph is built by connecting data points in your plot.
 
 Below is a line graph show an exponential increase over some unit time.
 
-![](README_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
 
 ### Bar chart
 
@@ -944,7 +968,7 @@ Below there is a bar chart with some value on the `y-axis` being
 compared between category `P1` and `P2`. We can quickly see that `P2` is
 greater in value than `P1`.
 
-![](README_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
 
 ### Box plot
 
@@ -953,7 +977,7 @@ categorial variable. This would be similar to comparing multiple
 histograms. A box plot uses lines and a rectangle to display quantiles,
 median, and range of values.
 
-![](README_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
 
 ## `ggplot2`
 
@@ -976,7 +1000,7 @@ the first thing you have to do is get your canvas\!
 ggplot()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
 
 The `ggplot` function will initiate the canvas, also called *frame*,
 that will hold your plot. You will typically pass two arguments onto
@@ -997,7 +1021,7 @@ ggplot(df, aes(x=betaX, y=betaY)) +
   geom_point(alpha=0.2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
 
 You perform brush stroked on your canvas by using the `+` operator,
 followed by some function. In this case, we used `geom_point`. This has
@@ -1019,7 +1043,7 @@ ggplot() +
   geom_point(aes(x=df$betaX, y=df$betaY), alpha=0.2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
 
 If you want to change the name of your axis, and give your plot a title,
 use the `xlab`, `ylab`, and `ggtitle` functions.
@@ -1032,7 +1056,7 @@ ggplot(df, aes(x=betaX, y=betaY)) +
   ggtitle("This is a title")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
 
 Hmmmm, the title is not centered… That’s a bummer. Well we can add a
 `theme` to fix that\!
@@ -1046,7 +1070,7 @@ ggplot(df, aes(x=betaX, y=betaY)) +
   theme(plot.title=element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
 
 Within our `theme`, we assign `element_text(hjust=0.5)` to `plot.title`…
 
@@ -1069,7 +1093,7 @@ ggplot() +
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](README_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
 
 Here we added a histogram of `betaX` ontop of our scatter plot. However,
 we had a huge oversight\! The y-axis of the histogram is much greater
@@ -1104,14 +1128,14 @@ ggplot(dat, aes(x=Income)) +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-51-1.png)<!-- -->
 
 I admit, I went a bit overboard with the shading\! However, this is a
 perfect learning moment:
 
 > Do **not** add unnecessary features to your visualization. Everything
 > in your plot should help make the interpretation of your data more
-> **intuitive**, and **not** cooler.
+> **intuitive**, and **not** just cooler.
 
 In the above graph, I introduced four new aspects of `ggplot2`:
 
@@ -1138,7 +1162,7 @@ dat %>%
     theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
 
 This time we included our trusty `dplyr` functions and `%>%`. The same
 concept as before applies in this case, since it is just feeding the
@@ -1164,8 +1188,8 @@ I was googling a bit trying to find at what income range is considered
 middle class. They were all around $45,000 to $120,000, so let’s go with
 that and plot the middle class’s distribution.
 
-The first method I show you is quick and dirty way of getting a graph
-colored by income class. I will show you a better method after this one.
+The first method I show you is a simple way of getting a graph colored
+by income class. I will show you a better method after this one.
 
 ``` r
 UPPER = 120000
@@ -1206,7 +1230,7 @@ ggplot() +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-51-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
 
 The above code is simply using `dplyr` functions to split our original
 dataframe into three parts, the upper, middle, and lower classes. We
@@ -1273,7 +1297,7 @@ ggplot(dat_income_class) +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
 
 Oh gosh\! That looks like a lot to take in\! Let’s break down:
 
@@ -1313,6 +1337,12 @@ Oh gosh\! That looks like a lot to take in\! Let’s break down:
     categorical data, and thus assigns each category (upper, middle, and
     lower) its own color.
 
+Notice that in the function definition for `get_class_income` I gave
+`upper` and `lower` default values. However, since I kind of just made
+up my boundaries, I allowed my function to be flexible, or more
+*abstract*. If I decide to change what the upper income and lower income
+boundary should be, my function can handle it now.
+
 **SIDE NOTE**: Do not worry if that was too much, just go over it a
 couple of times. I will be making other R guides talking about
 conditionals, writing functions, and built-ins such as `vapply`.
@@ -1326,7 +1356,7 @@ self-documenting.
 
 Here is a side-by-side comparison:
 
-![](README_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
 
 Why go through all this trouble?
 
@@ -1355,7 +1385,7 @@ ggplot(dat_income_class) +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
 
 Holy moly, we have used the `facet_wrap` function on `City` once more.
 The colors we saw previous retain their meaning in each subplot. So we
@@ -1376,7 +1406,7 @@ ggplot(dat_income_class) +
         axis.text.x=element_text(hjust=1, angle=45))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
 
 I added a new argument on the `theme` function. This time we passed
 `element_text` onto `axis.text.x` to adjust how our x-axis text is
@@ -1401,7 +1431,7 @@ ggplot(dat_income_class) +
         axis.text.x=element_text(hjust=1, angle=45))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
 
 The addition of `fill` shows us that there are two income classes per
 City. However, if there is a lower class present in a city, there are no
@@ -1437,7 +1467,7 @@ ggplot(dat_income_class) +
         axis.text.x=element_text(hjust=1, angle=45))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-59-1.png)<!-- -->
 
 Finally, let’s make a bar plot to see how many people are in each class
 per city.
@@ -1462,7 +1492,7 @@ ggplot(total_per_class) +
         axis.text.x=element_text(angle=45, hjust=1))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-60-1.png)<!-- -->
 
 The bar plot introduced us to three new ideas:
 

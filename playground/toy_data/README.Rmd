@@ -23,9 +23,9 @@ output:
     * [`select`](#select)
     * [`filter`](#filter)
     * [`mutate`](#mutate)
+    * [`group_by` & `summarize`](#group_by-&-summarize)
     * [`arrange`](#arrange)
     * [`rename`](#rename)
-    * [`group_by` & `summarize`](#group_by-&-summarize)
 6. [Visualization](#visualization)
     * [Types of plots](#types-of-plots)
       * [Histogram](#histograms)
@@ -40,8 +40,7 @@ output:
 # Setting up 
 
 ```{r}
-is_valid <- require(tidyverse)
-if (!is_valid) {
+if (!require(tidyverse)) {
   install.packages("tidyverse")
   library(tidyverse)
 }
@@ -49,32 +48,32 @@ if (!is_valid) {
 
 The `tidyverse` is a collection of packages, such as `ggplot2` and `dplyr`, that have multiple tools not offered in base R. You can find more information about the `tidyerse` by clicking on this [link](https://www.tidyverse.org/).
 
-When we import the `tidyverse`, you will see a __Conflicts__ warning. This is of no concern. It is just informing us that certain functions that are defined in `dplyr` have the same name as functions in base R. The imported functions will be used.
+When we import the `tidyverse`, you will see a __Conflicts__ warning. This is of no concern. It is just informing us that certain functions that are defined in the `dplyr` package have the same name as functions in base R. The imported functions will be used.
 
-__SIDE NOTE__: We can import packages through the `library` or the `require` functions. If a package does not exist, `library` will raise an error and `require` will produce a `boolean`, or `logical`. This logical value represents if the import was successful, `TRUE`, or failed, `FALSE`.
+__SIDE NOTE__: We can import packages through the `library` or the `require` functions. If a package does not exist, `library` will raise an error and `require` will produce a `logical`, or `boolean`. This logical value represents if the import was successful, `TRUE`, or failed, `FALSE`.
 
 # Importing our data
 
 We are using a toy, fictional, dataset obtained from [Kaggle](https://www.kaggle.com/carlolepelaars/toy-dataset). Fortunately, this data is stored as a `.csv`, comma-separated values. This is a standard format that stores tabular data as text. Each cell, value, is separated by a comma. 
 
-__SIDE NOTE__: There are other ways to store data as text. The use of a comma could be substituted by `;`, for instance. I encourage you to find information of _flat files_.
+__SIDE NOTE__: There are other ways to store data as text. The use of a comma could be substituted by `;`, for instance. I encourage you to find more information on _flat files_.
 
 ```{r}
-path <- file.path(".", "toy_dataset.csv")
+path <- file.path("toy_dataset.csv")
 ```
 
-Above is the _path_ to our data. Be sure to have downloaded and unzipped the data from Kaggle in the same directory, folder, as this notebook. We use the `file.path` function to design a _path_ that is independent of the operating system which we may be using. For example, using the format of a path from Windows in a Mac would not work. We assign this constructed path to the `path` variable.
+Above is the _path_ to our data. Be sure to have downloaded and unzipped the data from Kaggle in the same directory, folder, as this notebook. We use the `file.path` function to design a _path_ that is independent of the operating system which we may be using. We assign this constructed path to the `path` variable.
 
 For this case, `file.path` is not that useful, given that the `.csv` file should be resting within the working directory of this R notebook.
 
-```{r}
+```{r message=FALSE}
 dat <- read_csv(path)
 
 # This would also work, if in the same directory as notebook
 dat <- read_csv("toy_dataset.csv")
 ```
 
-After defining our path, we can call the `read_csv`, a function from the `readr` package, to parse through our file and store our data as a `tibble`. A `tibble` is a modern version of a dataframe. The main differences between a tibble and a dataframe are printing, subsetting, and recycling. You can find out more information about what that means by clicking on this [link](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html).
+After defining our path, we can call the `read_csv`, a function from the `readr` package, to parse through our file and store our data as a `tibble`. A `tibble` is a modern version of a dataframe.The main differences between a tibble and a dataframe are printing, subsetting, and recycling. You can find out more information about what that means by clicking on this [link](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html).
 
 It is important to note that base R also has a function to parse through `.csv` files...
 
@@ -82,13 +81,12 @@ It is important to note that base R also has a function to parse through `.csv` 
 example1 <- read.csv(path, stringsAsFactors = FALSE)
 ```
 
-The `read.csv` is a wrapper function around the `read.table` function. With `read.csv` we would have to specify that the `strings`, or `characters`, in our `.csv` file, are __not__ of `factor` type. We will explore what a `factor` is later on. There are other reasons to use `read_csv`, such as speed, but it does not matter for the pursposes of this introduction.
+The `read.csv` is a wrapper function around `read.table`. With `read.csv` we would have to specify that the `strings`, or `characters`, in our `.csv` file, are __not__ of `factor` type. We will cover `factor` types briefly, later on. There are other reasons to use `read_csv`, such as speed, but it does not matter for the pursposes of this introduction.
 
 __SIDE NOTE__: If you are curious to find more information about a function in R, you can use the `?` operator. In the R console, type `?read.csv`. You will be directed to the `read.csv` documentation within RStudio.
 
 ```{r include=FALSE}
 colnames(dat)[3] <- "Sex"
-
 ```
 
 # First glance
@@ -99,9 +97,9 @@ The first thing you should do when getting a new data set is to start familiariz
 head(dat)
 ```
 
-Looking at the first or last few rows is good and all, but its still not enough to get familiar with this data. Another nifty tool is `str`, which is give you the _structure_ of your data.
+Looking at the first or last few rows is good and all, but it's still not enough to get familiar with this data. Another nifty tool is `str`, which gives you the _structure_ of your data.
 
-* Class of the variable being passed: `tibble`
+* Class of the variable being passed: `tbl_df`, `tbl` and `data.frame`
 * Number of observations: `150000 obs`
 * Number of variables: `6 variables`
 * Column names
@@ -114,7 +112,7 @@ Looking at the first or last few rows is good and all, but its still not enough 
 str(dat, give.attr = FALSE)
 ```
 
-You could also just want the number of observations or variables. You can call the `dim` function that gives you the _dimensions_ of the inputted dataframe. The first element is the number of rows, observations, and then the number of columns, variables.
+You could also just want the number of observations or variables. You can call the `dim` function that gives you the _dimensions_ of an input. The first element is the number of rows, observations, and then the number of columns, variables.
 
 ```{r}
 dim(dat)
@@ -126,7 +124,7 @@ You can also look at the names of the columns with the `colnames` function.
 colnames(dat)
 ```
 
-Finally, there is also the `summary` function. This allows you to have a small report of basic descriptive statistics of dataframe's variables.
+Finally, there is also the `summary` function. This allows you to have a small report of basic descriptive statistics of the dataframe's variables.
 
 ```{r}
 summary(dat)
@@ -138,6 +136,21 @@ We found our first oddity! If we gear our attention to the minimum value of `Inc
 dat <- dat[dat$Income > 0, ]
 summary(dat)
 ```
+
+Notice that `Illness`, `Sex`, and `City` are not giving us much useful information. It tells us the length of the column, the class and the mode. I will leave `City` as is for now, given that its current format will allow me to show you some other tools later on.
+
+```{r}
+dat[, "Illness"] <- factor(dat$Illness)
+dat[, "Sex"] <- factor(dat$Sex)
+
+summary(dat)
+```
+
+We are now getting some more useful information. We can now tell how many `Female` and `Male` individuals are represented in this data. We can also see how many individuals are have an `Illness`. 
+
+What exactly happened though? Before our `Sex` and `Income` where of `character` type, or just plain text. However, we know that `Female` and `Male` and `No` and `Yes` can be treated as _categorical_ data. More specifically, `Sex` and `Illness` are _nominal categorical variables_. By using the `factor` function, R is now aware that there are two categories in `Sex` and in `Illness`, therefore, it will be able to perform certain statistics keeping these categories in mind.
+
+__SIDE NOTE__: There are also _ordinal categorial variables_. As their name implies, these are categorical variables with some sort of _order_. For example, "cold" and "hot" are categorical values. At the same time, we know that "cold" is less than "hot". However, saying that "Yes" is greater than "No" in `Illness` does not make much sense.
 
 # Subsetting
 
@@ -259,7 +272,7 @@ dat %>%
   filter(City == "Dallas" & Age > 50) %>%
   select(Income) %>%
   mutate(Income = Income / 1000) %>%
-  summarize(mean(Income))
+  summarize(meanIncome = mean(Income))
 ```
 
 This looks more understandable! We have our `dat` dataframe, and we slingshot that into the `filter` function. The dataframe is filtered and then goes to `select`, `mutate`, and finally `summarize`. `%>%` allows for the output of one function to be inputted into another without having function nested into each other.
@@ -267,6 +280,12 @@ This looks more understandable! We have our `dat` dataframe, and we slingshot th
 Readability, while very important when writing any sort of code, is not the only reason to use pipes. I encourage you to look into why we use pipes, and what other pipe operators are available in R.
 
 The indentation are just to make the code neater. It is easier to read line by line, rather than having a long line of pipes.
+
+__SIDE NOTE__: This is how you would have done it if you opted to use the tools from the subsetting section. the main difference is that this output will be a numeric vector and not a dataframe.
+
+```{r}
+mean(dat$Income[dat$City == "Dallas" & dat$Age > 50] / 1000)
+```
 
 ## `select`
 
@@ -327,6 +346,31 @@ dallas_and_g50_income <- dat %>%
 dallas_and_g50_income
 ```
 
+## `group_by` & `summarize`  
+
+So far we have learned how to `select`, `filter`, and `mutate` our dataframes. That is already quite a lot to take in!  There are two more powerful tools that you should know. Let us go through an example, and then explain what happened. 
+
+```{r}
+mean_income_by_city <- dat %>% 
+  select(City, Income) %>%
+  mutate(Income_thousands = Income / 1000) %>%
+  group_by(City) %>%
+  summarize(meanIncome = mean(Income_thousands))
+
+mean_income_by_city 
+```
+
+The break down:  
+1. Create and assign the final dataframe to variable `mean_income_by_city`  
+2. _Select_ the `City` and `Income` columns
+3. Create new variable `Income_thousands`, and assign it the quotient of `Income / 1000`
+4. _Group_ the dataframe by their cities
+5. Calculate the mean income per city
+
+You can think of a `City` as a category, and there are people that fall under that category. We can group all the information about those people under that `City`. It is like creating a new dataframe for each `City`.
+
+After we group out cities, any operation we perform will be executed on a per group basis. For example `mutate` operates on a per element basis, dividing each `Income` value by `1000`. However, when we call the `mean` function on `Income_thousands`, the operation is performed group wise. 
+
 ## `arrange`
 
 The `arrange` function sorts, or _arranges_, a specify column in __ascending order__.
@@ -363,44 +407,19 @@ dat %>%
 
 Note that the new name for the column is on the left side, and the old name is on the right.
 
-## `group_by` & `summarize`  
-
-So far we have learned how to `select`, `filter`, and `mutate` our dataframes. That is already quite a lot to take in!  There are two more powerful tools that you should know. Let us go through an example, and then explain what happened. 
-
-```{r}
-mean_income_by_city <- dat %>% 
-  select(City, Income) %>%
-  mutate(Income_thousands = Income / 1000) %>%
-  group_by(City) %>%
-  summarize(mean_Income = mean(Income_thousands))
-
-mean_income_by_city 
-```
-
-The break down:  
-1. Create and assign the final dataframe to variable `mean_income_by_city`  
-2. _Select_ the `City` and `Income` columns
-3. Create new variable `Income_thousands`, and assign it the quotient of `Income / 1000`
-4. _Group_ the dataframe by their cities
-5. Calculate the mean income per city
-
-You can think of a `City` as a category, and there are people that fall under that category. We can group all the information about those people under that `City`. It is like creating a new dataframe for each `City`.
-
-After we group out cities, any operation we perform will be executed on a per group basis. For example `mutate` operates on a per element basis, dividing each `Income` value by `1000`. However, when we call the `mean` function on `Income_thousands`, the operation is performed group wise. 
-
 # Visualization
 
 So far we have covered how to import your data, subset it, and transform it. It is time to learn how to visualize data! This is something you can spend hours doing since effective plots can enable you to see patterns and difference that may not stand out when staring at a dataframe.
 
-An important aspect of data visualization is that this is the main way you will be communicating your data to everyone. A strong visualization can go a long way in summarizing your results. 
+An important aspect of data visualization is that this is the main way you will be communicating your data to an audience. A strong visualization can go a long way in summarizing your results. 
 
 Hadley Wickham, the Chief Scientist of RStudio and author of the `tidyverse` packages, said in OpenVis 2017 conference: 
   
 > "Data visualization is fundamentally a human process. You can see something in a visualization that you could not expect, and no computer program could have told you about. However, since data visualization is fundamentally a human process, it will not scale."
 
-Visualization will help you understand aspects of your data that would simply not be apparent if you kept it in a dataframe. For example, our toy dataset has 150000 entries! It would be quite challenging to see what the distribution of `Income` looks like by just staring at the column!
+Visualization will help you understand aspects of your data that would simply not be apparent if you kept it as a dataframe. For example, our toy dataset has 150000 entries! It would be quite challenging to see what the distribution of `Income` looks like by just staring at the column!
 
-Moreover, since it is important that we make an effort to make data visualizations that accurately represent the results. There are multiple ways to mislead people with data. I encourage you to look for examples of misleading visualizations, and learn how to spot them.
+Moreover, it is important that we make an effort to make data visualizations that accurately represent the results. There are multiple ways to mislead people with data visualizations. I encourage you to look for examples of misleading visualizations, and learn how to spot them.
 
 __QUESTIONS__: What makes a bad graph? What makes a good graph?
 
@@ -412,9 +431,7 @@ I will be covering some common plots. Afterwards, you should venture out and exp
 
 ### Histograms
 
-Numerical data can be displayed as a histogram, which represents the frequency of a range of values. You can think of a histogram as plotting one dimensional data, since you are only plotting a single variable on the x-axis.
-
-A histogram communicated the frequency of our data via rectangular bars, also known as _bins_. Each bin is of equal width.
+A histogram communicates the frequency of numeric data via rectangular bars, also known as _bins_. Each bin is of equal width. You can think of a histogram as plotting one dimensional data, since you are only plotting a single variable on the x-axis.
 
 The main benefit of a histogram is that it allows you to see how your data is distributed. 
 
@@ -422,7 +439,9 @@ The main benefit of a histogram is that it allows you to see how your data is di
 * Is my data _asymmetrically distributed_? For example, positive/negative skew.
 * What is the _modality_ of my distribution? Your data may have two peaks, which would make it bimodal. or it could have more than two peaks. Distribution with multiple peaks can be symmetrical or asymmetrical.
 
-A crucial decision to be made when drawing a histogram is the number of bins you will use. This can affect how your distribution is rendered. There are mathematical methods to obtain a suitable number of bins. Sturge's rule is a common one, but there are many others. Do not think of these rules as an absolute.
+A crucial decision to be made when drawing a histogram is the number of bins you will use. This can affect how your distribution is rendered. 
+
+__SIDE NOTE__: There are mathematical methods to obtain a "suitable" number of bins. Sturge's rule is a common one, but there are many others. Do not think of these as an absolute.
 
 ```{r include=FALSE}
 histogram_example <- rgamma(1000,4,4)
@@ -648,7 +667,7 @@ ggplot(dat, aes(x=Income)) +
 
 I admit, I went a bit overboard with the shading! However, this is a perfect learning moment:
 
-> Do __not__ add unnecessary features to your visualization. Everything in your plot should help  make the interpretation of your data more __intuitive__, and __not__ cooler.
+> Do __not__ add unnecessary features to your visualization. Everything in your plot should help  make the interpretation of your data more __intuitive__, and __not__ just cooler.
 
 In the above graph, I introduced four new aspects of `ggplot2`:
 
@@ -683,7 +702,7 @@ You may find it better to store the wrangled dataframe into a new variable and p
 
 I was googling a bit trying to find at what income range is considered middle class. They were all around \$45,000 to \$120,000, so let's go with that and plot the middle class's distribution. 
 
-The first method I show you is quick and dirty way of getting a graph colored by income class. I will show you a better method after this one.
+The first method I show you is a simple way of getting a graph colored by income class. I will show you a better method after this one.
 
 ```{r}
 UPPER = 120000
@@ -725,7 +744,7 @@ ggplot() +
   
 ```
 
-The above code is simply using `dplyr` functions to split our original dataframe into three parts, the upper, middle, and lower classes. We then make histogram, using `geom_histogram` for each class and store them in their individual variables. After this, we call `ggplot` and "add", use the `+` operator, to place all our histograms __on top__ of our `ggplot` canvas. 
+The above code is simply using `dplyr` functions to split our original dataframe into three parts, the upper, middle, and lower classes. We then make histogram, using `geom_histogram` for each class and store them in their individual variables. After this, we call `ggplot` and "add", use the `+` operator, to place all our histograms __on top__ of our `ggplot` canvas.
 
 This is a good way of plotting this info down, but the cons are too great...
 
@@ -784,6 +803,8 @@ Oh gosh! That looks like a lot to take in! Let's break down:
   * `select` the `City` and `Income` columns
   * `mutate` the `Income` columns using the defined `get_class_incomes`, and creating a new column called `income_class`
 4. Plot our histogram. Pass our wrangled dataframe through `ggplot`, and assign `Income` column to our aesthetics `x` argument, within the `geom_histogram` function. We then also give our histogram some color but in a way we have not seen yet! We give `fill` the `income_class` column. `color` can tell this is some sort of categorical data, and thus assigns each category (upper, middle, and lower) its own color.
+
+Notice that in the function definition for `get_class_income` I gave `upper` and `lower` default values. However, since I kind of just made up my boundaries, I allowed my function to be flexible, or more _abstract_. If I decide to change what the upper income and lower income boundary should be, my function can handle it now.
 
 __SIDE NOTE__: Do not worry if that was too much, just go over it a couple of times. I will be making other R guides talking about conditionals, writing functions, and built-ins such as `vapply`.
 
