@@ -44,14 +44,14 @@ if (!require(tidyverse)) {
 
     ## Loading required package: tidyverse
 
-    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.2.1 ──
+    ## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 
     ## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
     ## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
     ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
     ## ✔ readr   1.1.1     ✔ forcats 0.3.0
 
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
 
@@ -276,19 +276,28 @@ We are now getting some more useful information. We can now tell how
 many `Female` and `Male` individuals are represented in this data. We
 can also see how many individuals are have an `Illness`.
 
-What exactly happened though? Before our `Sex` and `Income` where of
-`character` type, or just plain text. However, we know that `Female` and
-`Male` and `No` and `Yes` can be treated as *categorical* data. More
-specifically, `Sex` and `Illness` are *nominal categorical variables*.
-By using the `factor` function, R is now aware that there are two
-categories in `Sex` and in `Illness`, therefore, it will be able to
-perform certain statistics keeping these categories in mind.
+What exactly happened though? Before our the `Sex` and `Illness` columns
+where of `character` type, or just plain text. However, we know that
+`Female` and `Male` and `No` and `Yes` can be treated as *categorical*
+data. More specifically, `Sex` and `Illness` are *nominal categorical
+variables*. By using the `factor` function, R is now aware that there
+are two categories in `Sex` and in `Illness`, therefore, it will be able
+to perform certain statistics keeping these categories in mind.
 
 **SIDE NOTE**: There are also *ordinal categorial variables*. As their
 name implies, these are categorical variables with some sort of *order*.
 For example, “cold” and “hot” are categorical values. At the same time,
 we know that “cold” is less than “hot”. However, saying that “Yes” is
 greater than “No” in `Illness` does not make much sense.
+
+The case of our `Income` ourlier and categorical variables, we somehow
+managed to change those values, fairly easily. The former case, we
+managed to tell R that we only want the *rows* that have `Income`’s
+greater than 0. In the latter case, we selected a column in the
+dataframe and assigned it new values based on what was already there.
+
+The way you access those segments of your data is through subsetting,
+which is the topic of our next section.
 
 # Subsetting
 

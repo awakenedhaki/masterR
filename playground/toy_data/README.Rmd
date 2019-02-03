@@ -148,9 +148,13 @@ summary(dat)
 
 We are now getting some more useful information. We can now tell how many `Female` and `Male` individuals are represented in this data. We can also see how many individuals are have an `Illness`. 
 
-What exactly happened though? Before our `Sex` and `Income` where of `character` type, or just plain text. However, we know that `Female` and `Male` and `No` and `Yes` can be treated as _categorical_ data. More specifically, `Sex` and `Illness` are _nominal categorical variables_. By using the `factor` function, R is now aware that there are two categories in `Sex` and in `Illness`, therefore, it will be able to perform certain statistics keeping these categories in mind.
+What exactly happened though? Before our the `Sex` and `Illness` columns where of `character` type, or just plain text. However, we know that `Female` and `Male` and `No` and `Yes` can be treated as _categorical_ data. More specifically, `Sex` and `Illness` are _nominal categorical variables_. By using the `factor` function, R is now aware that there are two categories in `Sex` and in `Illness`, therefore, it will be able to perform certain statistics keeping these categories in mind.
 
 __SIDE NOTE__: There are also _ordinal categorial variables_. As their name implies, these are categorical variables with some sort of _order_. For example, "cold" and "hot" are categorical values. At the same time, we know that "cold" is less than "hot". However, saying that "Yes" is greater than "No" in `Illness` does not make much sense.
+
+The case of our `Income` ourlier and categorical variables, we somehow managed to change those values, fairly easily. The former case, we managed to tell R that we only want the _rows_ that have `Income`'s greater than 0. In the latter case, we selected a column in the dataframe and assigned it new values based on what was already there.
+
+The way you access those segments of your data is through subsetting, which is the topic of our next section.
 
 # Subsetting
 
