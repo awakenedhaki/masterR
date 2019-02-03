@@ -157,7 +157,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.001575947 secs
+    ## Time difference of 0.001796961 secs
 
 ``` r
 # Our mean function
@@ -172,7 +172,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.001646996 secs
+    ## Time difference of 0.001605034 secs
 
 The difference seems miniscule\! If you call these functions multiple
 times, you will see that our function is sometimes faster than base R’s.
@@ -191,7 +191,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 0.3139009 secs
+    ## Time difference of 0.306551 secs
 
 ``` r
 start <- Sys.time()
@@ -205,7 +205,7 @@ end <- Sys.time()
 end - start
 ```
 
-    ## Time difference of 1.96285 secs
+    ## Time difference of 2.04371 secs
 
 Oof\! This time around our input is 6 orders of magnitude greater that
 our first test. We begin to see a massive difference. Our `mean2` takes
@@ -234,7 +234,7 @@ print(mean2, envir=.GlobalEnv)
     ##   }
     ##   element_sum / length(x)
     ## }
-    ## <bytecode: 0x7fc8e9177148>
+    ## <bytecode: 0x7ff1d2d332c8>
 
 R gives us the implementation of `mean2`. It also gives us `bytecode:
 ...`, all this is telling it where the function can be found in memory,
@@ -601,23 +601,11 @@ was defined outside of the function, an we would be correct.
 However, when `4` is added, does that change maintained *globally*? In
 other words, will x equal 8 after the `some_function` call ends?
 
-``` r
-x
-```
+    ## [1] "This is the value of x before running the some_function: 4"
 
-    ## [1] 4
+    ## [1] "This is the value of x when running some_function: 8"
 
-``` r
-some_function()
-```
-
-    ## [1] 8
-
-``` r
-x
-```
-
-    ## [1] 4
+    ## [1] "This is the value of x after running the some_function: 4"
 
 Looks like the change we made on `x` was restricted to the *local*
 environment of our function.
@@ -637,25 +625,12 @@ Now `some_function` has `x` as an argument. It is important to note that
 the `x` argumnet is not a specific value. As you may remember in math
 classes, `x` represents any possible numeric value.
 
-``` r
-x
-```
-
-    ## [1] 4
-
-``` r
-some_function(1)
-```
+    ## [1] "This is the value of x before running the some_function: 4"
 
     ## [1] 1
+    ## [1] "This is the value of x within some_function: 5"
 
-    ## [1] 5
-
-``` r
-x
-```
-
-    ## [1] 4
+    ## [1] "This is the value of x after running the some_function: 4"
 
 `1` is assigned as the value of `x`, **within** the body of the
 function. Then `4` is added to the locally defined `x` and returned. No
@@ -666,27 +641,44 @@ that function.
 x <- 4
 
 some_function <- function(y) {
-  print(y)
+  print(paste("This is the value of y within some_function:", y))
   y + x
 }
 ```
 
 ``` r
-x
+print(paste("This is the value of x before running the some_function:", x))
 ```
 
-    ## [1] 4
+    ## [1] "This is the value of x before running the some_function: 4"
 
 ``` r
-some_function(2)
+print(paste("This is the sum of x and y returned by some_function:", some_function(2)))
 ```
 
-    ## [1] 2
+    ## [1] "This is the value of y within some_function: 2"
+    ## [1] "This is the sum of x and y returned by some_function: 6"
 
-    ## [1] 6
+``` r
+print("Below is the error when calling on y outside of some_function:")
+```
+
+    ## [1] "Below is the error when calling on y outside of some_function:"
+
+``` r
+y
+```
+
+    ## Error in eval(expr, envir, enclos): object 'y' not found
 
 This time we pass `2` as the value of `y`, and we are given the addition
-of `y` and `x`. R knew to use the `x` that is globally defined.
+of `y` and `x`. R knew to use the `x` that is globally defined. If you
+try to call on `y` outside of `some_function`, R will return an error,
+given that `y` is not defined.
+
+As soon as you leave the curly braces of `some_function`, R has gotten
+rid of our `y` object. If you run this code on your own, and look at the
+Environment tab in RStudio, you will likely see no `y` variable defined.
 
 **KEY CONCEPT**: R will look for a variable within the *curly braces*
 `{}`, if it can’t find the variable within the first `{}`, R will go to
@@ -701,6 +693,12 @@ exists("x")
 ```
 
     ## [1] TRUE
+
+``` r
+exists("y")
+```
+
+    ## [1] FALSE
 
 ``` r
 exists("mean2")
