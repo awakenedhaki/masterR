@@ -144,68 +144,40 @@ We see that our `mean2` produces the same output as the base `mean`
 function. I wonder… Is there a difference in runtime, the time it takes
 to complete the operation?
 
-``` r
-# base R mean function
-start <- Sys.time()
-mean(1:60)
-```
+    # base R mean function
+    start_base <- Sys.time()
+    mean(1:60)
+    end_base <- Sys.time()
+    
+    # Our mean function
+    start_2 <- Sys.time()
+    mean2(1:60)
+    end_2 <- Sys.time()
 
-    ## [1] 30.5
+    ## [1] "Run time for mean: 0.0097050666809082"
 
-``` r
-end <- Sys.time()
-end - start
-```
-
-    ## Time difference of 0.001796961 secs
-
-``` r
-# Our mean function
-start <- Sys.time()
-mean2(1:60)
-```
-
-    ## [1] 30.5
-
-``` r
-end <- Sys.time()
-end - start
-```
-
-    ## Time difference of 0.001605034 secs
+    ## [1] "Run time for mean2: 0.00343680381774902"
 
 The difference seems miniscule\! If you call these functions multiple
 times, you will see that our function is sometimes faster than base R’s.
 
 How well does our function *scale*?
 
-``` r
-start <- Sys.time()
-mean(1:60000000)
-```
+    # base R mean function 
+    start <- Sys.time()
+    mean(1:60000000)
+    end <- Sys.time()
+    end - start
+    
+    # Our mean function
+    start <- Sys.time()
+    mean2(1:60000000)
+    end <- Sys.time()
+    end - start
 
-    ## [1] 3e+07
+    ## [1] "Run time for mean: 0.307859897613525"
 
-``` r
-end <- Sys.time()
-end - start
-```
-
-    ## Time difference of 0.306551 secs
-
-``` r
-start <- Sys.time()
-mean2(1:60000000)
-```
-
-    ## [1] 3e+07
-
-``` r
-end <- Sys.time()
-end - start
-```
-
-    ## Time difference of 2.04371 secs
+    ## [1] "Run time for mean2: 1.92795491218567"
 
 Oof\! This time around our input is 6 orders of magnitude greater that
 our first test. We begin to see a massive difference. Our `mean2` takes
@@ -234,7 +206,7 @@ print(mean2, envir=.GlobalEnv)
     ##   }
     ##   element_sum / length(x)
     ## }
-    ## <bytecode: 0x7ff1d2d332c8>
+    ## <bytecode: 0x7fd2c14b5818>
 
 R gives us the implementation of `mean2`. It also gives us `bytecode:
 ...`, all this is telling it where the function can be found in memory,
@@ -601,11 +573,11 @@ was defined outside of the function, an we would be correct.
 However, when `4` is added, does that change maintained *globally*? In
 other words, will x equal 8 after the `some_function` call ends?
 
-    ## [1] "This is the value of x before running the some_function: 4"
+    ## [1] "This is the value of x before running some_function: 4"
 
     ## [1] "This is the value of x when running some_function: 8"
 
-    ## [1] "This is the value of x after running the some_function: 4"
+    ## [1] "This is the value of x after running some_function: 4"
 
 Looks like the change we made on `x` was restricted to the *local*
 environment of our function.
@@ -625,12 +597,12 @@ Now `some_function` has `x` as an argument. It is important to note that
 the `x` argumnet is not a specific value. As you may remember in math
 classes, `x` represents any possible numeric value.
 
-    ## [1] "This is the value of x before running the some_function: 4"
+    ## [1] "This is the value of x before running some_function: 4"
 
     ## [1] 1
     ## [1] "This is the value of x within some_function: 5"
 
-    ## [1] "This is the value of x after running the some_function: 4"
+    ## [1] "This is the value of x after running some_function: 4"
 
 `1` is assigned as the value of `x`, **within** the body of the
 function. Then `4` is added to the locally defined `x` and returned. No
@@ -647,10 +619,10 @@ some_function <- function(y) {
 ```
 
 ``` r
-print(paste("This is the value of x before running the some_function:", x))
+print(paste("This is the value of x before running some_function:", x))
 ```
 
-    ## [1] "This is the value of x before running the some_function: 4"
+    ## [1] "This is the value of x before running some_function: 4"
 
 ``` r
 print(paste("This is the sum of x and y returned by some_function:", some_function(2)))

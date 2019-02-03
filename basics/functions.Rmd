@@ -85,38 +85,62 @@ Aha! It is stored in the global environment, as mentioned before.
 
 We see that our `mean2` produces the same output as the base `mean` function. I wonder... Is there a difference in runtime, the time it takes to complete the operation?
 
-```{r}
+```{r include=FALSE}
 # base R mean function
-start <- Sys.time()
+start_base <- Sys.time()
 mean(1:60)
-end <- Sys.time()
-end - start
+end_base <- Sys.time()
+
+# Our mean function
+start_2 <- Sys.time()
+mean2(1:60)
+end_2 <- Sys.time()
 ```
 
-```{r}
-# Our mean function
-start <- Sys.time()
-mean2(1:60)
-end <- Sys.time()
-end - start
+    # base R mean function
+    start_base <- Sys.time()
+    mean(1:60)
+    end_base <- Sys.time()
+    
+    # Our mean function
+    start_2 <- Sys.time()
+    mean2(1:60)
+    end_2 <- Sys.time()
+
+```{r echo=FALSE}
+print(paste("Run time for mean:", end_base - start_base))
+print(paste("Run time for mean2:", end_2 - start_2))
 ```
 
 The difference seems miniscule! If you call these functions multiple times, you will see that our function is sometimes faster than base R's. 
 
 How well does our function _scale_?
 
-```{r}
-start <- Sys.time()
+```{r include=FALSE}
+start_base <- Sys.time()
 mean(1:60000000)
-end <- Sys.time()
-end - start
+end_base <- Sys.time()
+
+start_2 <- Sys.time()
+mean2(1:60000000)
+end_2 <- Sys.time()
 ```
 
-```{r}
-start <- Sys.time()
-mean2(1:60000000)
-end <- Sys.time()
-end - start
+    # base R mean function 
+    start <- Sys.time()
+    mean(1:60000000)
+    end <- Sys.time()
+    end - start
+    
+    # Our mean function
+    start <- Sys.time()
+    mean2(1:60000000)
+    end <- Sys.time()
+    end - start
+    
+```{r echo=FALSE}
+print(paste("Run time for mean:", end_base - start_base))
+print(paste("Run time for mean2:", end_2 - start_2))
 ```
 
 Oof! This time around our input is 6 orders of magnitude greater that our first test. We begin to see a massive difference. Our `mean2` takes 2 seconds to do the job... base R has us beat with a whopping 0.3 seconds! The difference is going back to how these functions are implemented, and in what language.
@@ -389,9 +413,9 @@ What is the scope of variable `x`? We see it inside and outside of `some_functio
 However, when `4` is added, does that change maintained _globally_? In other words, will x equal 8 after the `some_function` call ends?
 
 ```{r echo=FALSE}
-print(paste("This is the value of x before running the some_function:", x))
+print(paste("This is the value of x before running some_function:", x))
 print(paste("This is the value of x when running some_function:", some_function()))
-print(paste("This is the value of x after running the some_function:", x))
+print(paste("This is the value of x after running some_function:", x))
 ```
 
 Looks like the change we made on `x` was restricted to the _local_ environment of our function.
@@ -410,9 +434,9 @@ some_function <- function(x) {
 Now `some_function` has `x` as an argument. It is important to note that the `x` argumnet is not a specific value. As you may remember in math classes, `x` represents any possible numeric value.
 
 ```{r echo=FALSE}
-print(paste("This is the value of x before running the some_function:", x))
+print(paste("This is the value of x before running some_function:", x))
 print(paste("This is the value of x within some_function:", some_function(1)))
-print(paste("This is the value of x after running the some_function:", x))
+print(paste("This is the value of x after running some_function:", x))
 ```
 
 `1` is assigned as the value of `x`, __within__ the body of the function. Then `4` is added to the locally defined `x` and returned. No changes have been made globally, and no global variable was used within that function.
@@ -427,7 +451,7 @@ some_function <- function(y) {
 ```
 
 ```{r error=TRUE}
-print(paste("This is the value of x before running the some_function:", x))
+print(paste("This is the value of x before running some_function:", x))
 print(paste("This is the sum of x and y returned by some_function:", some_function(2)))
 print("Below is the error when calling on y outside of some_function:")
 y
