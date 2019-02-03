@@ -21,5 +21,3 @@ __TODO:__
    * Utilities
    * apply
    * Fix lexical scoping
-* Typos in Toy Data Set
-   * Add factors?
