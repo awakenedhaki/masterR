@@ -154,12 +154,13 @@ to complete the operation?
     mean2(1:60)
     end_2 <- Sys.time()
 
-    ## [1] "Run time for mean: 0.0097050666809082"
+    ## [1] "Run time for mean: 0.0113749504089355"
 
-    ## [1] "Run time for mean2: 0.00343680381774902"
+    ## [1] "Run time for mean2: 0.00204610824584961"
 
 The difference seems miniscule\! If you call these functions multiple
-times, you will see that our function is sometimes faster than base R’s.
+times, you will see that our function is sometimes faster than base R’s
+and sometimes slower.
 
 How well does our function *scale*?
 
@@ -175,9 +176,9 @@ How well does our function *scale*?
     end <- Sys.time()
     end - start
 
-    ## [1] "Run time for mean: 0.307859897613525"
+    ## [1] "Run time for mean: 0.307141065597534"
 
-    ## [1] "Run time for mean2: 1.92795491218567"
+    ## [1] "Run time for mean2: 1.93090605735779"
 
 Oof\! This time around our input is 6 orders of magnitude greater that
 our first test. We begin to see a massive difference. Our `mean2` takes
@@ -206,7 +207,7 @@ print(mean2, envir=.GlobalEnv)
     ##   }
     ##   element_sum / length(x)
     ## }
-    ## <bytecode: 0x7fd2c14b5818>
+    ## <bytecode: 0x7ff67da16ec0>
 
 R gives us the implementation of `mean2`. It also gives us `bytecode:
 ...`, all this is telling it where the function can be found in memory,
@@ -618,28 +619,12 @@ some_function <- function(y) {
 }
 ```
 
-``` r
-print(paste("This is the value of x before running some_function:", x))
-```
-
     ## [1] "This is the value of x before running some_function: 4"
-
-``` r
-print(paste("This is the sum of x and y returned by some_function:", some_function(2)))
-```
 
     ## [1] "This is the value of y within some_function: 2"
     ## [1] "This is the sum of x and y returned by some_function: 6"
 
-``` r
-print("Below is the error when calling on y outside of some_function:")
-```
-
     ## [1] "Below is the error when calling on y outside of some_function:"
-
-``` r
-y
-```
 
     ## Error in eval(expr, envir, enclos): object 'y' not found
 

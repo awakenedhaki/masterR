@@ -112,7 +112,7 @@ print(paste("Run time for mean:", end_base - start_base))
 print(paste("Run time for mean2:", end_2 - start_2))
 ```
 
-The difference seems miniscule! If you call these functions multiple times, you will see that our function is sometimes faster than base R's. 
+The difference seems miniscule! If you call these functions multiple times, you will see that our function is sometimes faster than base R's and sometimes slower. 
 
 How well does our function _scale_?
 
@@ -450,7 +450,7 @@ some_function <- function(y) {
 }
 ```
 
-```{r error=TRUE}
+```{r error=TRUE, echo=FALSE}
 print(paste("This is the value of x before running some_function:", x))
 print(paste("This is the sum of x and y returned by some_function:", some_function(2)))
 print("Below is the error when calling on y outside of some_function:")
