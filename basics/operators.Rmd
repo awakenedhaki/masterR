@@ -4,14 +4,3 @@ output:
   github_document:
     html_preview: false
 ---
-
-# Introduction
-
-You will find multiple sites that give the same explanation of operators, so this may not be as excited.
-
-_Operators_ are a symbol, or character, that represent an action. The option is performed on the operators _operands_, the data on the left and right.
-
-# Arithmetics
-
-## Addition: `+`
-
